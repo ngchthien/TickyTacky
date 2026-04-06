@@ -1,0 +1,69 @@
+## Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## User settings
+xcuserdata/
+
+## Scripts
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+## Xcode 8 and later
+!default.mode1v3
+!default.mode2v3
+!default.apple_universal_type_identifier
+!default.pboard
+
+## Xcode 8 and later (Swift Package Manager)
+.build/
+
+## Xcode 16 and later (Swift Package Manager)
+.swiftpm/
+
+## Intermediate files
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Target artifacts
+*.app
+*.framework
+*.xctest
+
+## CocoaPods
+#
+# We recommend against checking in the Pods directory, but it's optional.
+# Pods/
+#
+# If you are NOT checking in the Pods directory, you MUST have the following.
+# Podfile.lock
+
+## Carthage
+#
+# Carthage/Checkouts
+Carthage/Build/
+
+## AccuRev
+.accurev/
+
+## Fastlane
+#
+# It is recommended to not store the credentials in the repository.
+# Instead, use environmental variables or tools like secret management service.
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+## Code Signing
+*.p12
+*.cer
+*.mobileprovision
+
+## Other
+.DS_Store
