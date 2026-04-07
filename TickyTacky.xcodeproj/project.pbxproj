@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		012411DB2F84CF5700EF95D1 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 012411DA2F84CF5700EF95D1 /* Factory */; };
+		012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 012411DC2F84CF5700EF95D1 /* FactoryKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0124118F2F839E5B00EF95D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */,
+				012411DB2F84CF5700EF95D1 /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = TickyTacky;
 			packageProductDependencies = (
+				012411DA2F84CF5700EF95D1 /* Factory */,
+				012411DC2F84CF5700EF95D1 /* FactoryKit */,
 			);
 			productName = TickyTacky;
 			productReference = 012411812F839E5A00EF95D1 /* TickyTacky.app */;
@@ -195,6 +204,9 @@
 			);
 			mainGroup = 012411782F839E5A00EF95D1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 012411822F839E5A00EF95D1 /* Products */;
 			projectDirPath = "";
@@ -615,6 +627,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		012411DA2F84CF5700EF95D1 /* Factory */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = Factory;
+		};
+		012411DC2F84CF5700EF95D1 /* FactoryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 012411792F839E5A00EF95D1 /* Project object */;
 }

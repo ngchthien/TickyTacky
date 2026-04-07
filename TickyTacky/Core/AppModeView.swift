@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct AppModeView: View {
+  
+  @StateObject private var viewModel = AppModelViewModel()
   var body: some View {
-    VStack {
-      Image(systemName: "globe")
-        .imageScale(.large)
-        .foregroundStyle(.tint)
-      Text("Hello, world!")
+    Group{
+      switch viewModel.appMode {
+      case .gameSetup:
+        Text("Game Setup")
+      case .game:
+          Text("Game")
+      }
     }
-    .padding()
+    .animation(.easeIn,value: viewModel.appMode)
   }
 }
 
