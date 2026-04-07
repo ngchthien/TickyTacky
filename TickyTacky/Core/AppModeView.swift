@@ -20,6 +20,7 @@ struct AppModeView: View {
       }
     }
     .animation(.easeIn,value: viewModel.appMode)
+    
   }
 }
 
