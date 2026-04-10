@@ -42,7 +42,7 @@ private extension SelectionGroupView {
         let isSelected = selected == option
         return Text(option.description)
             .fontWeight(.medium)
-            .foregroundStyle(isSelected ? Color.appTheme.accent : Color.appTheme.secondaryText)
+            .foregroundStyle(isSelected ? Color.appTheme.accentContrastText : Color.appTheme.secondaryText)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .background(isSelected ? Color.appTheme.info.opacity(0.6) : Color.appTheme.info.opacity(0.2))
