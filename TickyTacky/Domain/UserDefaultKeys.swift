@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+
+enum UserDefaultKeys{
+  static let isDarkMode = "isDarkMode"
+  
+  
+}

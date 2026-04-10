@@ -16,6 +16,12 @@ extension Container{
     }.singleton
     
   }
+  var gameSetupStore: Factory<GameSetupLiveStore>
+  {
+    self{
+      MainActor.assumeIsolated{ GameSetupLiveStore()}
+    }.singleton
+  }
 }
 
 
