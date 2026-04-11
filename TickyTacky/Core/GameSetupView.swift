@@ -58,7 +58,7 @@ private extension GameSetupView {
     
     var welcomeText: some View {
         VStack(spacing: 8) {
-            Text("Tic Tac Toe")
+            Text("Ticky Tacky")
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundStyle(Color.appTheme.accent)
