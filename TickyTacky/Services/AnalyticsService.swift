@@ -15,6 +15,7 @@ protocol AnalyticsProtocol {
 }
 
 final class AnalyticsService: AnalyticsProtocol {
+    
     func trackGameStart(difficulty: Difficulty, firstTurn: FirstTurn) {
         print("📊 Analytics: Game Started | Difficulty: \(difficulty) | First Turn: \(firstTurn)")
     }
