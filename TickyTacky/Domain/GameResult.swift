@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+enum GameResult {
+    case player1Win
+    case player2Win
+    case tied
+}
