@@ -2,8 +2,6 @@
 //  GameResultView.swift
 //  TickyTacky
 //
-//  Created by M1 Pro on 11/4/26.
-//
 
 import SwiftUI
 
@@ -12,66 +10,146 @@ struct GameResultView: View {
     let resetGame: () -> ()
     
     var body: some View {
-        VStack(spacing: 24) {
-            titleView
+        ZStack {
+            backgroundGradient
             
-            if let winnerPlayer = gameState.winnerPlayer {
-                winnerPlayerView(winnerPlayer)
+            VStack(spacing: 32) {
+                headerSection
+                    .padding(.top, 56)
+                
+                if let winnerPlayer = gameState.winnerPlayer {
+                    winnerCard(winnerPlayer)
+                } else if gameState.isTied {
+                    tieCard
+                }
+                
+                Spacer()
+                
+                playAgainButton
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 34)
             }
-            
-            playAgainButton
+            .infinityFrame()
         }
-        .padding()
-        .infinityFrame()
-        .background(Color.appTheme.viewBackground)
-        .presentationDetents([.height(GameConstants.winnerSheetHeight)])
-        .presentationCornerRadius(AppCornerRadius.overall.value)
+        .presentationDetents([.height(500)])
+        .presentationCornerRadius(AppCornerRadius.overall.value * 2)
         .presentationDragIndicator(.visible)
     }
 }
 
 private extension GameResultView {
-    var titleView: some View {
-        Text(gameState.isTied ? "🤝 It's a Tie!" : "🎉 Game Over!")
-            .font(.title)
-            .fontWeight(.bold)
-            .foregroundStyle(gameState.isTied ? Color.appTheme.alternateAccent : Color.appTheme.success)
-    }
-    
-    func winnerPlayerView(_ winnerPlayer: Player) -> some View {
-        HStack(spacing: 12) {
-            Text("Winner:")
-                .font(.title2)
-                .foregroundStyle(Color.appTheme.secondaryText)
+    var backgroundGradient: some View {
+        ZStack {
+            Color.appTheme.viewBackground.ignoresSafeArea()
             
-            Image(winnerPlayer.image)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 44, height: 44)
-            
-            Text(winnerPlayer.cellSymbol.symbol)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundStyle(winnerPlayer.cellSymbol.color)
-                .frame(width: 44, height: 44)
-                .background(winnerPlayer.cellSymbol.color.opacity(0.15))
-                .cornerRadius(AppCornerRadius.cell.value / 2)
+            LinearGradient(
+                colors: [
+                    (gameState.isTied ? Color.appTheme.alternateAccent : Color.appTheme.success).opacity(0.15),
+                    Color.clear
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
         }
     }
     
-    var playAgainButton: some View {
-        Label("Play Again", systemImage: "arrow.counterclockwise.circle.fill")
-            .primaryButton()
-            .button(.press) {
-                resetGame()
+    var headerSection: some View {
+        VStack(spacing: 8) {
+            Text(gameState.isTied ? "🤝" : "🏆")
+                .font(.system(size: 60))
+            
+            Text(gameState.isTied ? "It's a Tie!" : "Victory!")
+                .font(.system(size: 32, weight: .black, design: .rounded))
+                .foregroundStyle(Color.appTheme.text)
+            
+            Text(gameState.isTied ? "Great minds think alike." : "An legendary battle has ended.")
+                .font(.subheadline)
+                .foregroundStyle(Color.appTheme.secondaryText)
+        }
+    }
+    
+    func winnerCard(_ winner: Player) -> some View {
+        VStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(winner.cellSymbol.color.opacity(0.1))
+                    .frame(width: 100, height: 100)
+                
+                Image(winner.image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70, height: 70)
+                    .shadow(.regular)
             }
+            
+            VStack(spacing: 4) {
+                Text(winner.profile.name.description)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundStyle(Color.appTheme.text)
+                
+                Text(winner.isBot ? "THE AI OVERLORD" : "THE CHAMPION")
+                    .font(.caption2)
+                    .fontWeight(.black)
+                    .tracking(2)
+                    .foregroundStyle(winner.cellSymbol.color)
+            }
+        }
+        .padding(24)
+        .background(Color.appTheme.cellBackground)
+        .cornerRadius(.overall)
+        .shadow(.regular)
+    }
+    
+    var tieCard: some View {
+        HStack(spacing: 32) {
+          Image(.playerBoy1)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
+            
+            Text("VS")
+                .font(.headline)
+                .fontWeight(.black)
+                .foregroundStyle(Color.appTheme.secondaryText)
+            
+          Image(.playerBoy2)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
+        }
+        .padding(24)
+        .background(Color.appTheme.cellBackground)
+        .cornerRadius(.overall)
+        .shadow(.regular)
+    }
+    
+    var playAgainButton: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "arrow.counterclockwise.circle.fill")
+            Text("Play Again")
+        }
+        .font(.headline)
+        .fontWeight(.bold)
+        .foregroundStyle(Color.appTheme.accentContrastText)
+        .padding(.vertical, 16)
+        .frame(maxWidth: .infinity)
+        .background(
+            LinearGradient(
+                colors: [Color.appTheme.accent, Color.appTheme.accent.opacity(0.8)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(.button)
+        .shadow(.regular)
+        .button(.press) {
+            resetGame()
+        }
     }
 }
 
 #Preview {
-    VStack(spacing: 40) {
-        GameResultView(gameState: .won(.defaultPlayer)) {}
-        Divider()
-        GameResultView(gameState: .tied) {}
-    }
+    GameResultView(gameState: .won(.defaultPlayer)) {}
 }
