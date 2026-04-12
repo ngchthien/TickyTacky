@@ -8,18 +8,34 @@
 import SwiftUI
 
 struct GameView: View {
-  @StateObject var viewModel : GameViewModel = .init()
+    @StateObject var viewModel : GameViewModel = .init()
     var body: some View {
-        VStack {
-            playersStatsView
-            Spacer()
-            gameBoardView
-            Spacer()
-            actionButtonsView
+        ZStack {
+            backgroundGradient
+            
+            VStack(spacing: 0) {
+                playersStatsView
+                    .padding(.top, 20)
+                    .padding(.horizontal)
+                
+                Spacer()
+                
+                gameBoardView
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: AppCornerRadius.overall.value * 1.5)
+                            .fill(Color.appTheme.cellBackground.opacity(0.3))
+                            .blur(radius: 20)
+                            .padding(-20)
+                    )
+                
+                Spacer()
+                
+                actionButtonsView
+                    .padding(.bottom, 30)
+            }
+            .infinityFrame()
         }
-        .infinityFrame()
-        .padding()
-        .background(Color.appTheme.viewBackground)
         .sheet(isPresented: .init(get: { viewModel.showWinnerSheet }, set: { _ in })) {
             GameResultView(gameState: viewModel.gameState) {
                 viewModel.resetGame()
@@ -29,6 +45,23 @@ struct GameView: View {
 }
 
 private extension GameView {
+    var backgroundGradient: some View {
+        ZStack {
+            Color.appTheme.viewBackground.ignoresSafeArea()
+            
+            LinearGradient(
+                colors: [
+                    Color.appTheme.accent.opacity(0.1),
+                    Color.appTheme.alternateAccent.opacity(0.05),
+                    Color.clear
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        }
+    }
+
     var playersStatsView: some View {
         HStack {
             PlayerInGameView(
