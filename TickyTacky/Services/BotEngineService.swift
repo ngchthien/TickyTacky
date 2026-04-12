@@ -8,24 +8,79 @@
 import Foundation
 
 protocol BotEngineServiceProtocol {
-    func bestMove(in board: Board, difficulty: Difficulty) -> CellCoordinate
+    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) -> CellCoordinate
 }
 
 struct BotEngineService: BotEngineServiceProtocol {
-    func bestMove(in board: Board, difficulty: Difficulty) -> CellCoordinate {
+    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) -> CellCoordinate {
         switch difficulty {
         case .easy:
             return randomMove(from: board)
         case .medium:
-            return mediumMove(from: board)
+            return mediumMove(from: board, botSymbol: botSymbol)
         case .hard:
-            // Placeholder for optimal move logic (Minimax)
-            return .init(row: 0, col: 0)
+            return hardMove(from: board, botSymbol: botSymbol)
         }
     }
 }
 
 private extension BotEngineService {
+    func hardMove(from board: Board, botSymbol: CellState) -> CellCoordinate {
+        var bestScore = Int.min
+        var move = CellCoordinate(row: 0, col: 0)
+        let opponentSymbol: CellState = botSymbol == .x ? .o : .x
+        
+        for row in 0..<3 {
+            for col in 0..<3 {
+                if board[row][col] == .empty {
+                    var tempBoard = board
+                    tempBoard[row][col] = botSymbol
+                    let score = minimax(board: tempBoard, depth: 0, isMaximizing: false, botSymbol: botSymbol, opponentSymbol: opponentSymbol)
+                    if score > bestScore {
+                        bestScore = score
+                        move = CellCoordinate(row: row, col: col)
+                    }
+                }
+            }
+        }
+        return move
+    }
+    
+    func minimax(board: Board, depth: Int, isMaximizing: Bool, botSymbol: CellState, opponentSymbol: CellState) -> Int {
+        let winner = checkWinner(in: board)
+        if winner == botSymbol { return 10 - depth }
+        if winner == opponentSymbol { return depth - 10 }
+        if !board.flatMap({ $0 }).contains(.empty) { return 0 }
+        
+        if isMaximizing {
+            var bestScore = Int.min
+            for row in 0..<3 {
+                for col in 0..<3 {
+                    if board[row][col] == .empty {
+                        var tempBoard = board
+                        tempBoard[row][col] = botSymbol
+                        let score = minimax(board: tempBoard, depth: depth + 1, isMaximizing: false, botSymbol: botSymbol, opponentSymbol: opponentSymbol)
+                        bestScore = max(score, bestScore)
+                    }
+                }
+            }
+            return bestScore
+        } else {
+            var bestScore = Int.max
+            for row in 0..<3 {
+                for col in 0..<3 {
+                    if board[row][col] == .empty {
+                        var tempBoard = board
+                        tempBoard[row][col] = opponentSymbol
+                        let score = minimax(board: tempBoard, depth: depth + 1, isMaximizing: true, botSymbol: botSymbol, opponentSymbol: opponentSymbol)
+                        bestScore = min(score, bestScore)
+                    }
+                }
+            }
+            return bestScore
+        }
+    }
+    
     func randomMove(from board: Board) -> CellCoordinate {
         let emptyCells: [CellCoordinate] = board.enumerated().flatMap { rowIndex, row in
             row.enumerated().compactMap { colIndex, cell in
@@ -36,12 +91,13 @@ private extension BotEngineService {
         return emptyCells.randomElement() ?? CellCoordinate(row: 0, col: 0)
     }
     
-    func mediumMove(from board: Board) -> CellCoordinate {
-        if let winningMove = immediateWinningMove(for: .o, in: board) {
+    func mediumMove(from board: Board, botSymbol: CellState) -> CellCoordinate {
+        if let winningMove = immediateWinningMove(for: botSymbol, in: board) {
             return winningMove
         }
         
-        if let blockMove = immediateWinningMove(for: .x, in: board) {
+        let opponentSymbol: CellState = botSymbol == .x ? .o : .x
+        if let blockMove = immediateWinningMove(for: opponentSymbol, in: board) {
             return blockMove
         }
         

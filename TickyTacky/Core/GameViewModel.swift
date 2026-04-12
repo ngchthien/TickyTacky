@@ -42,7 +42,7 @@ final class GameViewModel: ObservableObject {
     }
     
     var isPlayHumanMoveDisabled: Bool {
-        isBotMovePending || isAnimationInProgress || gameState != .playing
+        currentPlayer.isBot || isBotMovePending || isAnimationInProgress || gameState != .playing
     }
     
     var otherPlayer: Player {
@@ -77,6 +77,7 @@ final class GameViewModel: ObservableObject {
     }
     
     func playHumanMove(row: Int, col: Int) {
+        guard !isPlayHumanMoveDisabled else { return }
         playMove(row: row, col: col)
     }
     
@@ -109,7 +110,7 @@ private extension GameViewModel {
             
             try? await Task.sleep(for: .seconds(GameConstants.botMoveDelay))
             
-            let bestMove = gameStore.botBestMove(in: board, difficulty: difficulty)
+            let bestMove = gameStore.botBestMove(in: board, difficulty: difficulty, botSymbol: currentPlayer.cellSymbol)
             playMove(row: bestMove.row, col: bestMove.col)
         }
     }
