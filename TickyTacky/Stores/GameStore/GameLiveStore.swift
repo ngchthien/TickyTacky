@@ -24,7 +24,7 @@ final class GameLiveStore: GameStore {
         boardLogic.isBoardFull(board)
     }
     
-    func botBestMove(in board: [[CellState]], difficulty: Difficulty) -> CellCoordinate {
-        botEngine.bestMove(in: board, difficulty: difficulty)
+    func botBestMove(in board: [[CellState]], difficulty: Difficulty, botSymbol: CellState) -> CellCoordinate {
+        botEngine.bestMove(in: board, difficulty: difficulty, botSymbol: botSymbol)
     }
 }

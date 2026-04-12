@@ -13,4 +13,8 @@ extension Board {
     static var empty: Self {
         .init(repeating: .init(repeating: .empty, count: GameConstants.boardSize), count: GameConstants.boardSize)
     }
+    
+    var flattened: [CellState] {
+        self.flatMap { $0 }
+    }
 }

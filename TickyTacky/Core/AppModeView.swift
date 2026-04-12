@@ -16,7 +16,7 @@ struct AppModeView: View {
       case .gameSetup:
        GameSetupView()
       case .game:
-          Text("Game")
+          GameView()
       }
     }
     .animation(.easeIn,value: viewModel.appMode)
