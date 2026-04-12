@@ -13,10 +13,18 @@ TickyTacky is a premium, modern Tic Tac Toe game built for iOS with a focus on h
 ## 📱 Screenshots
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ngchthien/TickyTacky/main/Screenshots/setup_dark.png" width="200" alt="Setup Dark Mode">
-  <img src="https://raw.githubusercontent.com/ngchthien/TickyTacky/main/Screenshots/setup_light.png" width="200" alt="Setup Light Mode">
-  <img src="https://raw.githubusercontent.com/ngchthien/TickyTacky/main/Screenshots/gameplay.png" width="200" alt="Gameplay">
-  <img src="https://raw.githubusercontent.com/ngchthien/TickyTacky/main/Screenshots/result.png" width="200" alt="Game Result">
+
+  <img src="https://github.com/user-attachments/assets/efd9a589-b509-4e75-8116-f131155f5d68" width="200" alt="Setup Dark Mode">
+
+
+
+  <img src="https://github.com/user-attachments/assets/6af92d55-b051-4ae7-b9ca-9b3b6a65d9dd" width="200" alt="Setup Light Mode">
+ 
+
+  <img src="https://github.com/user-attachments/assets/49248deb-b18c-4045-b2bb-33a6ab567d7d" width="200" alt="Gameplay">
+
+
+  <img src="https://github.com/user-attachments/assets/0d3232f2-35ff-47c2-b620-2567369ae710"  width="200" alt="Game Result">
 </p>
 
 ## 🚀 Technical Stack
