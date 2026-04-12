@@ -11,6 +11,7 @@ struct GameConstants {
     static let boardSize = 3
     static let botMoveDelay: Double = 0.4
     static let winningCellsAnimationDelay: Double = 0.4
+    static let winningCellDelay: Double = 0.2
     static let cellsAnimation: Double = 0.4
     static let gameOverDelay: Double = 0.8
     

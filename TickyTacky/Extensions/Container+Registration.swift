@@ -27,6 +27,18 @@ extension Container{
     var analyticsService: Factory<AnalyticsProtocol> {
         self { MainActor.assumeIsolated { AnalyticsService() } }.singleton
     }
+    
+    var botEngineService: Factory<BotEngineServiceProtocol> {
+        self { MainActor.assumeIsolated { BotEngineService() } }.singleton
+    }
+    
+    var boardLogicService: Factory<BoardLogicServiceProtocol> {
+        self { MainActor.assumeIsolated { BoardLogicLiveService() } }.singleton
+    }
+    
+    var gameStore: Factory<GameStore> {
+        self { MainActor.assumeIsolated { GameLiveStore() } }.singleton
+    }
 }
 
 
