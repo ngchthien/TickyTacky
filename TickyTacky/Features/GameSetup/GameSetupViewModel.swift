@@ -39,6 +39,10 @@ final class GameSetupViewModel: ObservableObject {
     func goHistory() {
         appModeStore.goHistoryMode()
     }
+
+    func goSettings() {
+        appModeStore.goSettingsMode()
+    }
 }
 
 private extension GameSetupViewModel {

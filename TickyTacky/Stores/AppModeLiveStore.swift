@@ -25,4 +25,8 @@ final class AppModeLiveStore: ObservableObject{
   {
     appMode = .history
   }
+  func goSettingsMode()
+  {
+    appMode = .settings
+  }
 }

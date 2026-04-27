@@ -47,6 +47,10 @@ extension Container{
     var historyService: Factory<HistoryServiceProtocol> {
         self { MainActor.assumeIsolated { HistoryService() } }.singleton
     }
+
+    var achievementService: Factory<AchievementServiceProtocol> {
+        self { AchievementService() }.singleton
+    }
 }
 
 

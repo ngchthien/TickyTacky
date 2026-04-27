@@ -10,6 +10,7 @@ import SwiftUI
 struct CellView: View {
     let state: CellState
     let isWinningCell: Bool
+    var isSuggested: Bool = false
     
     var body: some View {
         ZStack {
@@ -24,6 +25,14 @@ struct CellView: View {
             RoundedRectangle(cornerRadius: AppCornerRadius.cell.value)
                 .stroke(Color.appTheme.success.opacity(isWinningCell ? 0.8 : 0), lineWidth: 3)
                 .blur(radius: isWinningCell ? 2 : 0)
+        }
+        .overlay {
+            if isSuggested {
+                Image(systemName: "lightbulb.fill")
+                    .font(.title2)
+                    .foregroundStyle(Color.appTheme.accent.opacity(0.4))
+                    .symbolEffect(.pulse)
+            }
         }
         .scaleEffect(isWinningCell ? 1.05 : 1.0)
         .animation(.spring(duration: 0.4), value: isWinningCell)

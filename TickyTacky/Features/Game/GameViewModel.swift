@@ -23,9 +23,14 @@ final class GameViewModel: ObservableObject {
     @Published var isBotMovePending = false
     @Published var isAnimationInProgress = false
     @Published var winningCells: [CellCoordinate] = []
+    @Published var suggestedMove: CellCoordinate?
     @Published var error: GameError?
+    @Published var newAchievements: [Achievement] = []
+    @Published var showConfetti: Bool = false
     
     private var gameStartDate: Date?
+    private var moveCount: Int = 0
+    @AppStorage("winStreak") private var winStreak: Int = 0
     
     @Injected(\.appModeStore) var appModeStore
     @Injected(\.gameStore) var gameStore
@@ -33,6 +38,7 @@ final class GameViewModel: ObservableObject {
     @Injected(\.analyticsService) var analyticsService
     @Injected(\.hapticService) var hapticService
     @Injected(\.historyService) var historyService
+    @Injected(\.achievementService) var achievementService
     private let gameSetupStore = Container.shared.gameSetupStore()
     
     init() {
@@ -68,6 +74,9 @@ final class GameViewModel: ObservableObject {
             isBotMovePending = false
             isAnimationInProgress = false
             error = nil
+            moveCount = 0
+            newAchievements = []
+            showConfetti = false
         }
         
         if currentPlayer.isBot {
@@ -82,7 +91,29 @@ final class GameViewModel: ObservableObject {
     
     func playHumanMove(row: Int, col: Int) {
         guard !isPlayHumanMoveDisabled else { return }
+        suggestedMove = nil
         playMove(row: row, col: col)
+    }
+    
+    func getHint() {
+        guard !isPlayHumanMoveDisabled else { return }
+        let bestMove = gameStore.botBestMove(in: board, difficulty: .hard, botSymbol: currentPlayer.cellSymbol)
+        
+        withAnimation(.spring()) {
+            suggestedMove = bestMove
+        }
+        
+        hapticService.triggerImpact(style: .medium)
+        
+        // Auto-hide hint after 2 seconds
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            if suggestedMove == bestMove {
+                withAnimation {
+                    suggestedMove = nil
+                }
+            }
+        }
     }
     
   
@@ -94,6 +125,8 @@ private extension GameViewModel {
         self.currentPlayer = currentPlayer
         self.nextStartingPlayer = currentPlayer
         self.gameStartDate = Date()
+        self.moveCount = 0
+        self.newAchievements = []
         
         analyticsService.trackGameStart(difficulty: difficulty, firstTurn: gameSetupStore.selectedFirstTurn)
     }
@@ -126,6 +159,7 @@ private extension GameViewModel {
             
             withAnimation(.spring(duration: GameConstants.cellsAnimation)) {
                 board[row][col] = currentPlayer.cellSymbol
+                moveCount += 1
             }
             
             
@@ -171,6 +205,7 @@ private extension GameViewModel {
             
             if !winner.isBot {
                 hapticService.triggerNotification(type: .success)
+                showConfetti = true
             } else {
                 hapticService.triggerNotification(type: .error)
             }
@@ -207,6 +242,34 @@ private extension GameViewModel {
         )
         
         historyService.saveMatch(history)
+        
+        checkAchievements(result: resultType == "Win" ? .humanWin : (resultType == "Loss" ? .botWin : .tie), duration: duration)
+    }
+    
+    func checkAchievements(result: GameResult, duration: TimeInterval) {
+        if result == .humanWin {
+            winStreak += 1
+        } else if result == .botWin {
+            winStreak = 0
+        }
+        
+        let totalTies = historyService.fetchAllMatches().filter { $0.resultType == "Tie" }.count
+        
+        let unlocked = achievementService.checkAchievements(
+            result: result,
+            difficulty: difficulty,
+            duration: duration,
+            moveCount: moveCount,
+            winStreak: winStreak,
+            totalTies: totalTies
+        )
+        
+        if !unlocked.isEmpty {
+            withAnimation(.spring()) {
+                newAchievements = unlocked
+            }
+            hapticService.triggerNotification(type: .success)
+        }
     }
     
     func handleError(_ error: GameError) {

@@ -1,0 +1,233 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld" : {
+
+    },
+    "%lld of %lld unlocked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld unlocked"
+          }
+        }
+      }
+    },
+    "%lld%%" : {
+
+    },
+    "🏆" : {
+
+    },
+    "🤝" : {
+
+    },
+    "1.0.0" : {
+
+    },
+    "Achievement Unlocked!" : {
+
+    },
+    "Achievements" : {
+
+    },
+    "An legendary battle has ended." : {
+
+    },
+    "Antigravity" : {
+
+    },
+    "Button Regular Shadow" : {
+
+    },
+    "Calculate" : {
+
+    },
+    "Change Language" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Dark Mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chế độ tối"
+          }
+        }
+      }
+    },
+    "Developer" : {
+
+    },
+    "Difficulty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Độ khó"
+          }
+        }
+      }
+    },
+    "Easy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dễ"
+          }
+        }
+      }
+    },
+    "Get Started" : {
+
+    },
+    "Great minds think alike." : {
+
+    },
+    "Haptic Feedback" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phản hồi rung"
+          }
+        }
+      }
+    },
+    "Hard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khó"
+          }
+        }
+      }
+    },
+    "It's a Tie!" : {
+
+    },
+    "Match History" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lịch sử đấu"
+          }
+        }
+      }
+    },
+    "Match Results" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kết quả trận đấu"
+          }
+        }
+      }
+    },
+    "Medium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trung bình"
+          }
+        }
+      }
+    },
+    "No matches yet" : {
+
+    },
+    "Play Again" : {
+
+    },
+    "Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cài đặt"
+          }
+        }
+      }
+    },
+    "Start Battle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bắt đầu trận đấu"
+          }
+        }
+      }
+    },
+    "Subtitle" : {
+
+    },
+    "THE AI OVERLORD" : {
+
+    },
+    "THE CHAMPION" : {
+
+    },
+    "THE ULTIMATE CHALLENGE" : {
+
+    },
+    "Ticky Tacky" : {
+
+    },
+    "Title" : {
+
+    },
+    "Version" : {
+
+    },
+    "Victory!" : {
+
+    },
+    "vs" : {
+
+    },
+    "VS" : {
+
+    },
+    "Who goes first?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ai đi trước?"
+          }
+        }
+      }
+    },
+    "WINNER" : {
+
+    },
+    "Your battle history will appear here." : {
+
+    },
+    "Your Progress" : {
+
+    }
+  },
+  "version" : "1.0"
+}

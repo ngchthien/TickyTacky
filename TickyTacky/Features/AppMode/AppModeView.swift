@@ -11,17 +11,21 @@ struct AppModeView: View {
   
   @StateObject private var viewModel = AppModeViewModel()
   var body: some View {
-    Group{
-      switch viewModel.appMode {
-      case .gameSetup:
-       GameSetupView()
-      case .game:
+    NavigationStack {
+      Group {
+        switch viewModel.appMode {
+        case .gameSetup:
+          GameSetupView()
+        case .game:
           GameView()
-      case .history:
+        case .history:
           HistoryView()
+        case .settings:
+          SettingsView()
+        }
       }
+      .animation(.easeIn, value: viewModel.appMode)
     }
-    .animation(.easeIn,value: viewModel.appMode)
     
   }
 }

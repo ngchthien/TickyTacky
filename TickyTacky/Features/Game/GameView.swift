@@ -35,9 +35,21 @@ struct GameView: View {
                     .padding(.bottom, 30)
             }
             .infinityFrame()
+            
+            achievementNotificationOverlay
+            
+            if viewModel.showConfetti {
+                ConfettiView()
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+            }
         }
         .sheet(isPresented: .init(get: { viewModel.showWinnerSheet }, set: { _ in })) {
-            GameResultView(gameState: viewModel.gameState) {
+            GameResultView(
+                gameState: viewModel.gameState,
+                player1: viewModel.player1,
+                player2: viewModel.player2
+            ) {
                 viewModel.resetGame()
             }
         }
@@ -86,6 +98,7 @@ private extension GameView {
         GameBoardView(
             board: viewModel.board.flattened,
             winningCells: Set(viewModel.winningCells.map { $0.row * GameConstants.boardSize + $0.col }),
+            suggestedCell: viewModel.suggestedMove.map { $0.row * GameConstants.boardSize + $0.col },
             onCellTap: { index in
                 let row = index / GameConstants.boardSize
                 let col = index % GameConstants.boardSize
@@ -97,8 +110,11 @@ private extension GameView {
     
     var actionButtonsView: some View {
         HStack(spacing: 32) {
-            actionButtonView(sfsymbol: "house")
-                .opacity(0)
+            actionButtonView(sfsymbol: "lightbulb.fill")
+                .button(.press) {
+                    viewModel.getHint()
+                }
+                .disabled(viewModel.isPlayHumanMoveDisabled)
             
             actionButtonView(sfsymbol: "arrow.clockwise", buttonSize: .large)
                 .button(.press) {
@@ -126,6 +142,50 @@ private extension GameView {
             switch self {
             case .regular: return .title3
             case .large: return .title2
+            }
+        }
+    }
+
+    @ViewBuilder
+    var achievementNotificationOverlay: some View {
+        if let achievement = viewModel.newAchievements.first {
+            VStack {
+                HStack(spacing: 16) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.orange.opacity(0.2))
+                            .frame(width: 40, height: 40)
+                        Image(systemName: "trophy.fill")
+                            .foregroundStyle(.orange)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Achievement Unlocked!")
+                            .font(.caption.bold())
+                            .foregroundStyle(Color.appTheme.secondaryText)
+                        Text(achievement.title)
+                            .font(.subheadline.bold())
+                            .foregroundStyle(Color.appTheme.text)
+                    }
+                    
+                    Spacer()
+                }
+                .padding()
+                .background(Color.appTheme.cellBackground)
+                .cornerRadius(.overall)
+                .shadow(.regular)
+                .padding()
+                .transition(.move(edge: .top).combined(with: .opacity))
+                
+                Spacer()
+            }
+            .onAppear {
+                Task {
+                    try? await Task.sleep(for: .seconds(3))
+                    withAnimation {
+                        viewModel.newAchievements.removeAll()
+                    }
+                }
             }
         }
     }

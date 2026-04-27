@@ -10,6 +10,7 @@ import SwiftUI
 struct GameBoardView: View {
     let board: [CellState]
     let winningCells: Set<Int>
+    var suggestedCell: Int? = nil
     let onCellTap: (Int) -> Void
     
     private let columns = Array(
@@ -22,7 +23,8 @@ struct GameBoardView: View {
             ForEach(0..<board.count, id: \.self) { index in
                 CellView(
                     state: board[index],
-                    isWinningCell: winningCells.contains(index)
+                    isWinningCell: winningCells.contains(index),
+                    isSuggested: suggestedCell == index
                 )
                 .button(.press) {
                     onCellTap(index)
