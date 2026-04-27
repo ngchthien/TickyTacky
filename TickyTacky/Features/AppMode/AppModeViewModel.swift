@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import Factory
-final class AppModelViewModel:ObservableObject{
+final class AppModeViewModel:ObservableObject{
   @Published var appMode: AppMode = .gameSetup
   private var cancellables = Set<AnyCancellable>()
  @Injected(\.appModeStore) var appModeStore
@@ -20,7 +20,7 @@ final class AppModelViewModel:ObservableObject{
   }
 }
 
-private extension AppModelViewModel{
+private extension AppModeViewModel{
   func setSubscribers()
   {
     appModeStore.$appMode

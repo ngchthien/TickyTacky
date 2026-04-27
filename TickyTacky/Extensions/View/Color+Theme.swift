@@ -1,5 +1,5 @@
 //
-//  View+Color.swift
+//  Color+Theme.swift
 //  TickyTacky
 //
 //  Created by M1 Pro on 7/4/26.

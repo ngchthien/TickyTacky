@@ -29,6 +29,7 @@ final class GameViewModel: ObservableObject {
     @Injected(\.gameStore) var gameStore
     @Injected(\.errorHandlerService) var errorHandlerService
     @Injected(\.analyticsService) var analyticsService
+    @Injected(\.hapticService) var hapticService
     private let gameSetupStore = Container.shared.gameSetupStore()
     
     init() {
@@ -123,6 +124,8 @@ private extension GameViewModel {
                 board[row][col] = currentPlayer.cellSymbol
             }
             
+            
+            hapticService.triggerImpact(style: .light)
             analyticsService.trackMove(player: currentPlayer.isBot ? .bot : .human, position: .init(row: row, col: col))
             
             if let winningCellCordinatesPath = gameStore.checkWin(in: board, for: currentPlayer.cellSymbol) {
@@ -161,10 +164,18 @@ private extension GameViewModel {
             }
             nextStartingPlayer = winner
             transitionGameState(to: .won(winner))
+            
+            if !winner.isBot {
+                hapticService.triggerNotification(type: .success)
+            } else {
+                hapticService.triggerNotification(type: .error)
+            }
+            
             analyticsService.trackGameEnd(result: winner.isBot ? .botWin : .humanWin)
         } else {
             nextStartingPlayer = otherPlayer
             transitionGameState(to: .tied)
+            hapticService.triggerNotification(type: .warning)
             analyticsService.trackGameEnd(result: .tie)
         }
     }

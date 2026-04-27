@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppModeView: View {
   
-  @StateObject private var viewModel = AppModelViewModel()
+  @StateObject private var viewModel = AppModeViewModel()
   var body: some View {
     Group{
       switch viewModel.appMode {
