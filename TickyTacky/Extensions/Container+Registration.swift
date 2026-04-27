@@ -39,6 +39,18 @@ extension Container{
     var gameStore: Factory<GameStore> {
         self { MainActor.assumeIsolated { GameLiveStore() } }.singleton
     }
+
+    var hapticService: Factory<HapticServiceProtocol> {
+        self { HapticService() }.singleton
+    }
+
+    var historyService: Factory<HistoryServiceProtocol> {
+        self { MainActor.assumeIsolated { HistoryService() } }.singleton
+    }
+
+    var achievementService: Factory<AchievementServiceProtocol> {
+        self { AchievementService() }.singleton
+    }
 }
 
 

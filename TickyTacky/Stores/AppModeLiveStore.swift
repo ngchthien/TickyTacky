@@ -21,4 +21,12 @@ final class AppModeLiveStore: ObservableObject{
   {
     appMode = .gameSetup
   }
+  func goHistoryMode()
+  {
+    appMode = .history
+  }
+  func goSettingsMode()
+  {
+    appMode = .settings
+  }
 }

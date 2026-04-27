@@ -7,6 +7,8 @@ import SwiftUI
 
 struct GameResultView: View {
     let gameState: GameState
+    let player1: Player
+    let player2: Player
     let resetGame: () -> ()
     
     var body: some View {
@@ -104,20 +106,22 @@ private extension GameResultView {
     
     var tieCard: some View {
         HStack(spacing: 32) {
-          Image(.playerBoy1)
+            Image(player1.image)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 50, height: 50)
+                .shadow(.light)
             
             Text("VS")
                 .font(.headline)
                 .fontWeight(.black)
                 .foregroundStyle(Color.appTheme.secondaryText)
             
-          Image(.playerBoy2)
+            Image(player2.image)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 50, height: 50)
+                .shadow(.light)
         }
         .padding(24)
         .background(Color.appTheme.cellBackground)
@@ -151,5 +155,5 @@ private extension GameResultView {
 }
 
 #Preview {
-    GameResultView(gameState: .won(.defaultPlayer)) {}
+    GameResultView(gameState: .won(.defaultPlayer), player1: .defaultPlayer, player2: .defaultPlayer) {}
 }

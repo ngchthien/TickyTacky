@@ -8,4 +8,6 @@
 enum AppMode {
   case gameSetup
   case game
+  case history
+  case settings
 }
