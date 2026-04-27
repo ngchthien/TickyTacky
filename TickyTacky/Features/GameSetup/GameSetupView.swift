@@ -33,9 +33,12 @@ struct GameSetupView: View {
             }
             .infinityFrame()
             
-            colorSchemeToggle
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding()
+            HStack(spacing: 12) {
+                historyButton
+                colorSchemeToggle
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .padding()
         }
     }
 }
@@ -180,6 +183,24 @@ private extension GameSetupView {
     func toggleColorScheme() {
         withAnimation(.spring(duration: 0.5)) {
             isDarkMode.toggle()
+        }
+    }
+    
+    var historyButton: some View {
+        ZStack {
+            Circle()
+                .fill(Color.appTheme.cellBackground)
+                .frame(width: 44, height: 44)
+                .shadow(.light)
+            
+            Image(systemName: "clock.arrow.circlepath")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(Color.appTheme.accent)
+        }
+        .button(.press) {
+            viewModel.goHistory()
         }
     }
 }

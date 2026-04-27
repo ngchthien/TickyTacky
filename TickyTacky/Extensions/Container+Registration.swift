@@ -43,6 +43,10 @@ extension Container{
     var hapticService: Factory<HapticServiceProtocol> {
         self { HapticService() }.singleton
     }
+
+    var historyService: Factory<HistoryServiceProtocol> {
+        self { MainActor.assumeIsolated { HistoryService() } }.singleton
+    }
 }
 
 

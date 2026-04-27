@@ -25,11 +25,14 @@ final class GameViewModel: ObservableObject {
     @Published var winningCells: [CellCoordinate] = []
     @Published var error: GameError?
     
+    private var gameStartDate: Date?
+    
     @Injected(\.appModeStore) var appModeStore
     @Injected(\.gameStore) var gameStore
     @Injected(\.errorHandlerService) var errorHandlerService
     @Injected(\.analyticsService) var analyticsService
     @Injected(\.hapticService) var hapticService
+    @Injected(\.historyService) var historyService
     private let gameSetupStore = Container.shared.gameSetupStore()
     
     init() {
@@ -90,6 +93,7 @@ private extension GameViewModel {
         let currentPlayer = getFirstTurnPlayer()
         self.currentPlayer = currentPlayer
         self.nextStartingPlayer = currentPlayer
+        self.gameStartDate = Date()
         
         analyticsService.trackGameStart(difficulty: difficulty, firstTurn: gameSetupStore.selectedFirstTurn)
     }
@@ -178,6 +182,31 @@ private extension GameViewModel {
             hapticService.triggerNotification(type: .warning)
             analyticsService.trackGameEnd(result: .tie)
         }
+        
+        saveGameToHistory(winner: winner)
+    }
+    
+    func saveGameToHistory(winner: Player?) {
+        guard let startDate = gameStartDate else { return }
+        let duration = Date().timeIntervalSince(startDate)
+        
+        let resultType: String
+        if let winner = winner {
+            resultType = winner == player1 ? "Win" : "Loss"
+        } else {
+            resultType = "Tie"
+        }
+        
+        let history = MatchHistory(
+            player1Name: player1.profile.name.description,
+            player2Name: player2.profile.name.description,
+            winnerName: winner?.profile.name.description,
+            duration: duration,
+            difficulty: difficulty.description,
+            resultType: resultType
+        )
+        
+        historyService.saveMatch(history)
     }
     
     func handleError(_ error: GameError) {
