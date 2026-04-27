@@ -22,7 +22,6 @@ struct SettingsView: View {
                         generalSection
                         appearanceSection
                         languageSection
-                        aboutSection
                     }
                     .padding()
                 }
@@ -33,6 +32,7 @@ struct SettingsView: View {
 }
 
 private extension SettingsView {
+    // ... (backgroundGradient, headerView, generalSection, appearanceSection, languageSection unchanged)
     var backgroundGradient: some View {
         ZStack {
             Color.appTheme.viewBackground.ignoresSafeArea()
@@ -149,34 +149,6 @@ private extension SettingsView {
                 .shadow(.light)
             }
             .button(.press) {}
-        }
-    }
-    
-    var aboutSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionHeader(title: "About")
-            
-            VStack(spacing: 16) {
-                HStack {
-                    Text("Version")
-                    Spacer()
-                    Text("1.0.0")
-                        .foregroundStyle(Color.appTheme.secondaryText)
-                }
-                
-                Divider()
-                
-                HStack {
-                    Text("Developer")
-                    Spacer()
-                    Text("Antigravity")
-                        .foregroundStyle(Color.appTheme.secondaryText)
-                }
-            }
-            .padding()
-            .background(Color.appTheme.cellBackground)
-            .cornerRadius(.overall)
-            .shadow(.light)
         }
     }
     
