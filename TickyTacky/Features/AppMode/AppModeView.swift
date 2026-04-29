@@ -14,6 +14,8 @@ struct AppModeView: View {
     NavigationStack {
       Group {
         switch viewModel.appMode {
+        case .home:
+          HomeView()
         case .gameSetup:
           GameSetupView()
         case .game:
@@ -22,6 +24,10 @@ struct AppModeView: View {
           HistoryView()
         case .settings:
           SettingsView()
+        case .onlineLobby:
+          OnlineLobbyView()
+        case .onlineGame(let roomID):
+          OnlineGameView(roomID: roomID)
         }
       }
       .animation(.easeIn, value: viewModel.appMode)

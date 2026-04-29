@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		012411DB2F84CF5700EF95D1 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 012411DA2F84CF5700EF95D1 /* Factory */; };
 		012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 012411DC2F84CF5700EF95D1 /* FactoryKit */; };
+		014813872F9F73930070274B /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 014813862F9F73930070274B /* FirebaseAnalytics */; };
+		014813892F9F73930070274B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 014813882F9F73930070274B /* FirebaseDatabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +61,8 @@
 			files = (
 				012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */,
 				012411DB2F84CF5700EF95D1 /* Factory in Frameworks */,
+				014813892F9F73930070274B /* FirebaseDatabase in Frameworks */,
+				014813872F9F73930070274B /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +125,8 @@
 			packageProductDependencies = (
 				012411DA2F84CF5700EF95D1 /* Factory */,
 				012411DC2F84CF5700EF95D1 /* FactoryKit */,
+				014813862F9F73930070274B /* FirebaseAnalytics */,
+				014813882F9F73930070274B /* FirebaseDatabase */,
 			);
 			productName = TickyTacky;
 			productReference = 012411812F839E5A00EF95D1 /* TickyTacky.app */;
@@ -206,6 +212,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */,
+				014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 012411822F839E5A00EF95D1 /* Products */;
@@ -410,6 +417,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to scan room QR codes.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -454,6 +462,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to scan room QR codes.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -637,6 +646,14 @@
 				minimumVersion = 2.5.3;
 			};
 		};
+		014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -649,6 +666,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 012411D92F84CF5700EF95D1 /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = FactoryKit;
+		};
+		014813862F9F73930070274B /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		014813882F9F73930070274B /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

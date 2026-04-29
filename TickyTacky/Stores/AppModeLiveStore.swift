@@ -11,22 +11,46 @@ import Combine
 @MainActor
 final class AppModeLiveStore: ObservableObject{
   
-  @Published  var appMode:AppMode = .gameSetup
+  @Published var appMode: AppMode = .home
+  private var previousMode: AppMode = .home
   
+  private func updateMode(_ newMode: AppMode) {
+    if appMode != newMode {
+        previousMode = appMode
+        appMode = newMode
+    }
+  }
+
+  func goHome()
+  {
+    updateMode(.home)
+  }
   func goGameMode()
   {
-    appMode = .game
+    updateMode(.game)
   }
   func goSetupMode()
   {
-    appMode = .gameSetup
+    updateMode(.gameSetup)
   }
   func goHistoryMode()
   {
-    appMode = .history
+    updateMode(.history)
   }
   func goSettingsMode()
   {
-    appMode = .settings
+    updateMode(.settings)
+  }
+  func goOnlineLobby()
+  {
+    updateMode(.onlineLobby)
+  }
+  func goOnlineGame(roomID: String)
+  {
+    updateMode(.onlineGame(roomID))
+  }
+  
+  func goBack() {
+    appMode = previousMode
   }
 }

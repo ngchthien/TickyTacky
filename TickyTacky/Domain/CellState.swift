@@ -12,6 +12,14 @@ enum CellState {
     case x
     case o
     
+    init(symbol: String) {
+        switch symbol.uppercased() {
+        case "X": self = .x
+        case "O": self = .o
+        default: self = .empty
+        }
+    }
+    
     var symbol: String {
         switch self {
         case .x: return "X"

@@ -30,7 +30,7 @@ final class HistoryViewModel: ObservableObject {
     }
     
     func goBack() {
-        appModeStore.goSetupMode()
+        appModeStore.goBack()
     }
     
     func formatDuration(_ duration: TimeInterval) -> String {

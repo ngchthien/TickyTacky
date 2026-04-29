@@ -16,26 +16,42 @@ struct PlayerSelectionView: View {
   private let botAvatar: ImageResource = .playerBot1
   
     var body: some View {
-      HStack(spacing: 8){
-       playerView(profile:$player1, isBotToggleEnabled: false)
-        Spacer()
-      versusTextView
-        Spacer()
-       playerView(profile:$player2, isBotToggleEnabled: true)
+      HStack(spacing: 0){
+        playerView(profile:$player1, isBotToggleEnabled: false)
         
+        Spacer()
+        versusTextView
+        Spacer()
+        
+        playerView(profile:$player2, isBotToggleEnabled: true)
       }
-      .padding(12)
-      .background(Color.appTheme.cellBackground)
+      .padding(.vertical, 24)
+      .padding(.horizontal, 16)
+      .background(
+        ZStack {
+            Color.appTheme.cellBackground.opacity(0.6)
+            RoundedRectangle(cornerRadius: AppCornerRadius.cell.value)
+                .stroke(Color.appTheme.divider.opacity(0.3), lineWidth: 1)
+        }
+      )
       .cornerRadius(.cell)
+      .shadow(.light)
     }
 }
 
 private extension PlayerSelectionView{
   var versusTextView:some View{
-    Text("vs")
-      .font(.title2)
-      .fontWeight(.medium)
-      .foregroundStyle(Color.appTheme.alternateAccent)
+    Text("VS")
+      .font(.system(size: 16, weight: .black))
+      .foregroundStyle(
+        LinearGradient(
+            colors: [Color.appTheme.accent, Color.appTheme.alternateAccent],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+      )
+      .padding(10)
+      .background(Circle().fill(Color.appTheme.viewBackground).shadow(.light))
   }
   func playerView(profile:Binding<PlayerProfile>, isBotToggleEnabled:Bool) -> some View{
     VStack(spacing: 8){
