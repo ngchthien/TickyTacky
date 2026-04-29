@@ -17,6 +17,8 @@ protocol OnlineGameServiceProtocol {
     func leaveRoom(roomID: String, playerID: String)
     func restartRoom(roomID: String)
     func setWinner(roomID: String, winnerID: String)
+    func requestRematch(roomID: String, playerID: String)
+    func sendEmoji(roomID: String, playerID: String, emoji: String)
 }
 
 struct GameRoom {
@@ -31,6 +33,11 @@ struct GameRoom {
     var currentTurn: String
     var status: String
     var winnerID: String?
+    var player1Rematch: Bool
+    var player2Rematch: Bool
+    var lastEmoji: String?
+    var lastEmojiSender: String?
+    var lastEmojiTimestamp: TimeInterval?
     
     init?(dict: [String: Any]) {
         guard let id = dict["id"] as? String,
@@ -51,6 +58,11 @@ struct GameRoom {
         self.currentTurn = turn
         self.status = status
         self.winnerID = dict["winnerID"] as? String
+        self.player1Rematch = dict["player1Rematch"] as? Bool ?? false
+        self.player2Rematch = dict["player2Rematch"] as? Bool ?? false
+        self.lastEmoji = dict["lastEmoji"] as? String
+        self.lastEmojiSender = dict["lastEmojiSender"] as? String
+        self.lastEmojiTimestamp = dict["lastEmojiTimestamp"] as? TimeInterval
     }
     
     func toDict() -> [String: Any] {
@@ -278,11 +290,64 @@ final class OnlineGameService: OnlineGameServiceProtocol {
             room["board"] = Array(repeating: "", count: 9)
             room["status"] = "playing"
             room["winnerID"] = nil
-            room["currentTurn"] = loserID ?? p1ID
+            room["player1Rematch"] = false
+            room["player2Rematch"] = false
+            room["currentTurn"] = loserID ?? p1ID ?? ""
             
             currentData.value = room
             return .success(withValue: currentData)
         }
+    }
+    
+    func requestRematch(roomID: String, playerID: String) {
+        db.child("rooms").child(roomID).runTransactionBlock { currentData in
+            guard var room = currentData.value as? [String: Any] else { return .success(withValue: currentData) }
+            
+            let p1ID = room["player1ID"] as? String ?? ""
+            if playerID == p1ID {
+                room["player1Rematch"] = true
+            } else {
+                room["player2Rematch"] = true
+            }
+            
+            // If both want rematch, auto restart
+            let p1Rematch = room["player1Rematch"] as? Bool ?? false
+            let p2Rematch = room["player2Rematch"] as? Bool ?? false
+            
+            if p1Rematch && p2Rematch {
+                let p2ID = room["player2ID"] as? String
+                let winnerID = room["winnerID"] as? String
+                
+                // Loser goes first
+                let loserID: String?
+                if winnerID == nil || winnerID == "tie" {
+                    loserID = [p1ID, p2ID].compactMap { $0 }.randomElement()
+                } else if winnerID == p1ID {
+                    loserID = p2ID
+                } else {
+                    loserID = p1ID
+                }
+                
+                room["board"] = Array(repeating: "", count: 9)
+                room["status"] = "playing"
+                room["winnerID"] = nil
+                room["player1Rematch"] = false
+                room["player2Rematch"] = false
+                room["currentTurn"] = loserID ?? p1ID
+            }
+            
+            currentData.value = room
+            return .success(withValue: currentData)
+        }
+    }
+    
+    func sendEmoji(roomID: String, playerID: String, emoji: String) {
+        let update: [String: Any] = [
+            "lastEmoji": emoji,
+            "lastEmojiSender": playerID,
+            "lastEmojiTimestamp": ServerValue.timestamp()
+        ]
+        db.child("rooms").child(roomID).updateChildValues(update)
     }
     
     func setWinner(roomID: String, winnerID: String) {

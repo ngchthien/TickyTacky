@@ -23,6 +23,10 @@ final class OnlineGameViewModel: ObservableObject {
     @Published var turnCountdown: Int = autoMoveTotalSeconds
     @Published var newAchievements: [Achievement] = []
     @Published var showQRCode: Bool = false
+    @Published var activeEmoji: String?
+    @Published var emojiSenderID: String?
+    @Published var myRematchRequested: Bool = false
+    @Published var opponentRematchRequested: Bool = false
     
     @Injected(\.appModeStore) private var appModeStore
     @Injected(\.onlineGameService) private var onlineGameService
@@ -82,6 +86,29 @@ final class OnlineGameViewModel: ObservableObject {
             newAchievements = []
             if room.status == "playing" || room.status == "waiting" {
                 isMatchSaved = false
+            }
+            myRematchRequested = false
+            opponentRematchRequested = false
+        }
+        
+        // Sync rematch states
+        if playerID == room.player1ID {
+            myRematchRequested = room.player1Rematch
+            opponentRematchRequested = room.player2Rematch
+        } else {
+            myRematchRequested = room.player2Rematch
+            opponentRematchRequested = room.player1Rematch
+        }
+        
+        // Handle Emoji
+        if let emoji = room.lastEmoji, 
+           let sender = room.lastEmojiSender, 
+           let timestamp = room.lastEmojiTimestamp,
+           timestamp > (Date().timeIntervalSince1970 - 2000) { // Firebase timestamp is ms, but we'll check it
+            // Simple check: if it's new (last 3 seconds)
+            let now = Date().timeIntervalSince1970 * 1000
+            if now - timestamp < 3000 {
+                showEmoji(emoji, from: sender)
             }
         }
         
@@ -281,6 +308,29 @@ final class OnlineGameViewModel: ObservableObject {
         let index = move.row * 3 + move.col
         onlineGameService.sendMove(roomID: roomID, boardIndex: index, playerID: playerID)
         hapticService.triggerImpact(style: .medium)
+    }
+    
+    func requestRematch() {
+        onlineGameService.requestRematch(roomID: roomID, playerID: playerID)
+        hapticService.triggerImpact(style: .medium)
+    }
+    
+    func sendEmoji(_ emoji: String) {
+        onlineGameService.sendEmoji(roomID: roomID, playerID: playerID, emoji: emoji)
+        hapticService.triggerImpact(style: .light)
+    }
+    
+    private func showEmoji(_ emoji: String, from senderID: String) {
+        activeEmoji = emoji
+        emojiSenderID = senderID
+        
+        // Hide after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            if self.activeEmoji == emoji {
+                self.activeEmoji = nil
+                self.emojiSenderID = nil
+            }
+        }
     }
     
     func restartGame() {
