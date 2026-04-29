@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCcm5xCsubMo7VL5i6xO8D7_NcJH8sDvEo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>770788940849</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.thienc.TickyTacky</string>
+	<key>PROJECT_ID</key>
+	<string>ticky-tacky-ios</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ticky-tacky-ios.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:770788940849:ios:5584098743d225cb9d8910</string>
+</dict>
+</plist>
