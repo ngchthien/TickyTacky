@@ -51,6 +51,17 @@ private extension HomeView {
             }
             .button(.press) {}
             
+            Button(action: viewModel.goLeaderboard) {
+                Image(systemName: "trophy.fill")
+                    .font(.title3.bold())
+                    .foregroundStyle(.yellow)
+                    .frame(width: 44, height: 44)
+                    .background(Color.appTheme.cellBackground)
+                    .clipShape(Circle())
+                    .shadow(.light)
+            }
+            .button(.press) {}
+            
             Spacer()
             
             Button(action: viewModel.goSettings) {

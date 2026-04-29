@@ -1,8 +1,28 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
+    },
     "%lld" : {
 
+    },
+    "%lld : %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld : %2$lld"
+          }
+        }
+      }
     },
     "%lld of %lld unlocked" : {
       "localizations" : {
@@ -27,6 +47,9 @@
 
     },
     "🤝" : {
+
+    },
+    "0000" : {
 
     },
     "Achievement Unlocked!" : {
@@ -88,6 +111,9 @@
     "Calculate" : {
 
     },
+    "Camera Preview Placeholder" : {
+
+    },
     "Challenge Players Worldwide" : {
       "localizations" : {
         "vi" : {
@@ -109,6 +135,7 @@
       }
     },
     "Code (e.g. 1234)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -118,10 +145,14 @@
         }
       }
     },
+    "Connecting..." : {
+
+    },
     "Continue" : {
 
     },
     "Create New Room" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -195,6 +226,9 @@
         }
       }
     },
+    "ENTER ROOM CODE" : {
+
+    },
     "Enter your name" : {
       "localizations" : {
         "vi" : {
@@ -252,6 +286,7 @@
       }
     },
     "HOST A GAME" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -282,6 +317,7 @@
       }
     },
     "Join" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -292,6 +328,7 @@
       }
     },
     "JOIN A GAME" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -300,6 +337,12 @@
           }
         }
       }
+    },
+    "JOIN NOW" : {
+
+    },
+    "LEADERBOARD" : {
+
     },
     "LOCAL BATTLE" : {
       "localizations" : {
@@ -409,6 +452,9 @@
     "Opponent wants a rematch!" : {
 
     },
+    "OR" : {
+
+    },
     "Play Again" : {
       "localizations" : {
         "vi" : {
@@ -428,6 +474,12 @@
           }
         }
       }
+    },
+    "Player" : {
+
+    },
+    "POINTS" : {
+
     },
     "Quit Match" : {
       "localizations" : {
@@ -459,6 +511,9 @@
         }
       }
     },
+    "Ready for battle" : {
+
+    },
     "READY TO PLAY" : {
       "localizations" : {
         "vi" : {
@@ -482,10 +537,11 @@
         }
       }
     },
-    "Room Code: %@" : {
+    "Scan QR Code" : {
 
     },
     "Scan Room QR Code" : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -527,6 +583,7 @@
       }
     },
     "Share the 4-digit code with your friend to start playing." : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {
@@ -586,6 +643,15 @@
     "Title" : {
 
     },
+    "Top Global Players" : {
+
+    },
+    "Try Again" : {
+
+    },
+    "Unable to load leaderboard" : {
+
+    },
     "Victory!" : {
       "localizations" : {
         "vi" : {
@@ -620,6 +686,7 @@
       }
     },
     "Waiting for opponent..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "vi" : {
           "stringUnit" : {

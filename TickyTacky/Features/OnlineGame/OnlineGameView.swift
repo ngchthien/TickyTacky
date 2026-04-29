@@ -18,34 +18,37 @@ struct OnlineGameView: View {
         ZStack {
             backgroundGradient
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 12) {
-                    headerView
-                    
-                    playersSection
-                    
-                    if viewModel.room?.status == "playing" {
-                        emojiPickerView
-                    }
-                    
-                    Group {
-                        if viewModel.room?.status == "waiting" {
-                            waitingStateView
-                        } else if viewModel.room?.status == "finished" {
-                            resultStateView
-                        } else {
-                            boardSection
+            VStack(spacing: 0) {
+                headerView
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
+                        playersSection
+                        
+                        if viewModel.room?.status == "playing" {
+                            emojiPickerView
                         }
+                        
+                        Group {
+                            if viewModel.room?.status == "waiting" {
+                                waitingStateView
+                            } else if viewModel.room?.status == "finished" {
+                                resultStateView
+                            } else {
+                                boardSection
+                            }
+                        }
+                        .transition(.opacity.combined(with: .scale(0.95)))
                     }
-                    .transition(.opacity.combined(with: .scale(0.95)))
+                    .padding(.horizontal)
+                    .padding(.top, 16)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .padding(.bottom, 20)
             }
             .safeAreaInset(edge: .bottom) {
                 if viewModel.room?.status != "finished" {
                     quitButton
+                        .padding(.bottom, 8)
                         .background(
                             Color.appTheme.viewBackground
                                 .mask(LinearGradient(gradient: Gradient(colors: [.clear, .black, .black]), startPoint: .top, endPoint: .bottom))
@@ -84,7 +87,7 @@ private extension OnlineGameView {
     var headerView: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("ROOM CODE")
+                Text(AppStrings.roomCode)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(Color.appTheme.secondaryText)
                 
@@ -97,8 +100,7 @@ private extension OnlineGameView {
             
             HStack(spacing: 6) {
                 Button(action: {
-                    UIPasteboard.general.string = viewModel.roomID
-                    viewModel.hapticService.triggerImpact(style: .light)
+                    viewModel.copyToClipboard(viewModel.roomID)
                 }) {
                     Image(systemName: "doc.on.doc.fill")
                         .font(.system(size: 12))
@@ -131,17 +133,18 @@ private extension OnlineGameView {
             }
         }
         .padding(.horizontal)
-        .padding(.top, 4)
+        .padding(.top, 16)
+        .padding(.bottom, 8)
     }
     
     var qrCodeSheet: some View {
         VStack(spacing: 32) {
             VStack(spacing: 12) {
-                Text("SCAN TO JOIN")
+                Text(AppStrings.scanToJoin)
                     .font(.headline.bold())
                     .foregroundStyle(Color.appTheme.secondaryText)
                 
-                Text("Room Code: \(viewModel.roomID)")
+                Text("\(AppStrings.roomCode): \(viewModel.roomID)")
                     .font(.title2.bold().monospaced())
                     .foregroundStyle(Color.appTheme.accent)
             }
@@ -162,7 +165,7 @@ private extension OnlineGameView {
             }
             
             Button(action: { viewModel.showQRCode = false }) {
-                Text("Done")
+                Text(AppStrings.done)
                     .font(.headline.bold())
                     .foregroundStyle(Color.appTheme.accentContrastText)
                     .frame(maxWidth: .infinity)
@@ -229,12 +232,12 @@ private extension OnlineGameView {
                             player: PlayerProfile(name: .custom(p1Name), image: .playerBoy1, type: .human),
                             orientation: .left,
                             isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player1ID && viewModel.room?.status == "playing",
-                            winsCount: 0
+                            winsCount: viewModel.room?.player1Score ?? 0
                         )
                         .scaleEffect(0.9)
                         
-                        if viewModel.activeEmoji != nil && viewModel.emojiSenderID == viewModel.room?.player1ID {
-                            emojiBubble(viewModel.activeEmoji!)
+                        if let emoji = viewModel.p1Emoji {
+                            emojiBubble(emoji)
                                 .offset(x: 10, y: -20)
                                 .transition(.scale.combined(with: .opacity))
                         }
@@ -245,9 +248,12 @@ private extension OnlineGameView {
                 }
             }
             
-            Text("VS")
-                .font(.system(size: 12, weight: .black))
-                .foregroundStyle(Color.appTheme.accent.opacity(0.5))
+            Text("\(viewModel.room?.player1Score ?? 0) : \(viewModel.room?.player2Score ?? 0)")
+                .font(.system(size: 24, weight: .black, design: .rounded))
+                .foregroundStyle(Color.appTheme.accent)
+                .lineLimit(1)
+                .fixedSize()
+                .frame(minWidth: 50)
             
             // Player 2 Slot
             VStack(spacing: 6) {
@@ -257,12 +263,12 @@ private extension OnlineGameView {
                             player: PlayerProfile(name: .custom(p2Name), image: .playerBoy2, type: .human),
                             orientation: .right,
                             isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player2ID && viewModel.room?.status == "playing",
-                            winsCount: 0
+                            winsCount: viewModel.room?.player2Score ?? 0
                         )
                         .scaleEffect(0.9)
                         
-                        if viewModel.activeEmoji != nil && viewModel.emojiSenderID == viewModel.room?.player2ID {
-                            emojiBubble(viewModel.activeEmoji!)
+                        if let emoji = viewModel.p2Emoji {
+                            emojiBubble(emoji)
                                 .offset(x: -10, y: -20)
                                 .transition(.scale.combined(with: .opacity))
                         }
@@ -316,7 +322,7 @@ private extension OnlineGameView {
             if viewModel.room?.player2ID == nil {
                 VStack(spacing: 16) {
                     ProgressView()
-                    Text("Waiting for an opponent...")
+                    Text(AppStrings.waitingForOpponent)
                         .font(.headline)
                         .foregroundStyle(Color.appTheme.secondaryText)
                     Text("Share code \(viewModel.roomID) with a friend.")
@@ -331,7 +337,7 @@ private extension OnlineGameView {
                     Button(action: viewModel.toggleReady) {
                         HStack(spacing: 12) {
                             Image(systemName: viewModel.isReady ? "checkmark.circle.fill" : "play.circle.fill")
-                            Text(viewModel.isReady ? "I'M READY!" : "READY TO PLAY")
+                            Text(viewModel.isReady ? AppStrings.imReady : AppStrings.readyToPlay)
                         }
                         .font(.headline.bold())
                         .foregroundStyle(Color.appTheme.accentContrastText)
@@ -353,7 +359,7 @@ private extension OnlineGameView {
     
     var resultStateView: some View {
         VStack(spacing: 24) {
-            Text(viewModel.gameResultText ?? "Match Ended")
+            Text(viewModel.gameResultText ?? AppStrings.matchEnded)
                 .font(.system(size: 44, weight: .black, design: .rounded))
                 .foregroundStyle(Color.appTheme.accent)
                 .multilineTextAlignment(.center)
@@ -363,7 +369,7 @@ private extension OnlineGameView {
                     VStack(spacing: 12) {
                         ProgressView()
                             .tint(Color.appTheme.accent)
-                        Text(viewModel.opponentRematchRequested ? "Restarting..." : "Waiting for opponent...")
+                        Text(viewModel.opponentRematchRequested ? "Restarting..." : AppStrings.waitingForOpponent)
                             .font(.subheadline.bold())
                             .foregroundStyle(Color.appTheme.secondaryText)
                     }
@@ -371,7 +377,7 @@ private extension OnlineGameView {
                     Button(action: viewModel.requestRematch) {
                         HStack {
                             Image(systemName: "arrow.counterclockwise")
-                            Text("Play Again")
+                            Text(AppStrings.restartGame)
                         }
                         .font(.headline.bold())
                         .foregroundStyle(Color.appTheme.accentContrastText)
@@ -395,7 +401,7 @@ private extension OnlineGameView {
                 }
                 
                 Button(action: viewModel.quitGame) {
-                    Text("Quit to Menu")
+                    Text(AppStrings.quitToMenu)
                         .font(.headline)
                         .foregroundStyle(Color.appTheme.secondaryText)
                 }
@@ -406,10 +412,10 @@ private extension OnlineGameView {
     }
     
     var boardSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             HStack(spacing: 10) {
-                Text(viewModel.isMyTurn ? "Your Turn!" : "Waiting for opponent...")
-                    .font(.subheadline.bold())
+                Text(viewModel.isMyTurn ? AppStrings.yourTurn : AppStrings.opponentTurn)
+                    .font(.headline.weight(.black))
                     .foregroundStyle(viewModel.isMyTurn ? Color.appTheme.accent : Color.appTheme.secondaryText)
                 
                 if viewModel.isMyTurn {
@@ -454,7 +460,7 @@ private extension OnlineGameView {
     
     var quitButton: some View {
         Button(action: viewModel.quitGame) {
-            Text("Quit Match")
+            Text(AppStrings.quitMatch)
                 .font(.subheadline.bold())
                 .foregroundStyle(.red)
                 .padding(.vertical, 8)

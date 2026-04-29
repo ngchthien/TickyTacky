@@ -11,6 +11,7 @@
 		012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 012411DC2F84CF5700EF95D1 /* FactoryKit */; };
 		014813872F9F73930070274B /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 014813862F9F73930070274B /* FirebaseAnalytics */; };
 		014813892F9F73930070274B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 014813882F9F73930070274B /* FirebaseDatabase */; };
+		01FD43E22FA1F45B00940090 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 01FD43E12FA1F45B00940090 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 			files = (
 				012411DD2F84CF5700EF95D1 /* FactoryKit in Frameworks */,
 				012411DB2F84CF5700EF95D1 /* Factory in Frameworks */,
+				01FD43E22FA1F45B00940090 /* FirebaseCrashlytics in Frameworks */,
 				014813892F9F73930070274B /* FirebaseDatabase in Frameworks */,
 				014813872F9F73930070274B /* FirebaseAnalytics in Frameworks */,
 			);
@@ -113,6 +115,7 @@
 				0124117D2F839E5A00EF95D1 /* Sources */,
 				0124117E2F839E5A00EF95D1 /* Frameworks */,
 				0124117F2F839E5A00EF95D1 /* Resources */,
+				01FD43E32FA1F57B00940090 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -127,6 +130,7 @@
 				012411DC2F84CF5700EF95D1 /* FactoryKit */,
 				014813862F9F73930070274B /* FirebaseAnalytics */,
 				014813882F9F73930070274B /* FirebaseDatabase */,
+				01FD43E12FA1F45B00940090 /* FirebaseCrashlytics */,
 			);
 			productName = TickyTacky;
 			productReference = 012411812F839E5A00EF95D1 /* TickyTacky.app */;
@@ -249,6 +253,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		01FD43E32FA1F57B00940090 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0124117D2F839E5A00EF95D1 /* Sources */ = {
@@ -411,6 +435,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "DWARF with dSYM File";
 				DEVELOPMENT_TEAM = X2RM3C6YJU;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -456,6 +481,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "DWARF with dSYM File";
 				DEVELOPMENT_TEAM = X2RM3C6YJU;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -676,6 +702,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		01FD43E12FA1F45B00940090 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 014813852F9F73930070274B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

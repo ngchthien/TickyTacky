@@ -13,4 +13,5 @@ enum AppMode: Equatable {
   case settings
   case onlineLobby
   case onlineGame(String)
+  case leaderboard
 }

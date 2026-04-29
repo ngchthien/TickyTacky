@@ -23,10 +23,13 @@ final class OnlineGameViewModel: ObservableObject {
     @Published var turnCountdown: Int = autoMoveTotalSeconds
     @Published var newAchievements: [Achievement] = []
     @Published var showQRCode: Bool = false
-    @Published var activeEmoji: String?
-    @Published var emojiSenderID: String?
+    
+    @Published var p1Emoji: String?
+    @Published var p2Emoji: String?
+    
     @Published var myRematchRequested: Bool = false
     @Published var opponentRematchRequested: Bool = false
+    @Published var showToast: Bool = false
     
     @Injected(\.appModeStore) private var appModeStore
     @Injected(\.onlineGameService) private var onlineGameService
@@ -37,6 +40,8 @@ final class OnlineGameViewModel: ObservableObject {
     @Injected(\.achievementService) private var achievementService
     @Injected(\.qrCodeService) private var qrCodeService
     @Injected(\.analyticsService) private var analyticsService
+    @Injected(\.leaderboardService) private var leaderboardService
+    @Injected(\.toastManager) private var toastManager
     
     @AppStorage("online_win_streak") private var winStreak: Int = 0
     
@@ -44,6 +49,11 @@ final class OnlineGameViewModel: ObservableObject {
     private var isMatchSaved: Bool = false
     private var turnTimer: Timer?
     private var matchStartTime: Date?
+    
+    private var p1EmojiLastTime: TimeInterval = 0
+    private var p2EmojiLastTime: TimeInterval = 0
+    private var p1EmojiTask: Task<Void, Never>? = nil
+    private var p2EmojiTask: Task<Void, Never>? = nil
     
     init(roomID: String) {
         self.roomID = roomID
@@ -70,7 +80,6 @@ final class OnlineGameViewModel: ObservableObject {
         let oldStatus = self.room?.status
         self.room = room
         
-        // Sync local isReady state with server
         self.isReady = (playerID == room.player1ID) ? room.player1Ready : room.player2Ready
         if room.status == "playing" {
             self.isReady = true
@@ -78,7 +87,6 @@ final class OnlineGameViewModel: ObservableObject {
         
         self.board = room.board.map { CellState(symbol: $0) }.chunked(into: 3)
         
-        // Handle transitions
         if (oldStatus == "finished" && room.status == "playing") || room.status == "waiting" {
             winningCells = []
             showConfetti = false
@@ -91,7 +99,6 @@ final class OnlineGameViewModel: ObservableObject {
             opponentRematchRequested = false
         }
         
-        // Sync rematch states
         if playerID == room.player1ID {
             myRematchRequested = room.player1Rematch
             opponentRematchRequested = room.player2Rematch
@@ -100,25 +107,23 @@ final class OnlineGameViewModel: ObservableObject {
             opponentRematchRequested = room.player1Rematch
         }
         
-        // Handle Emoji
-        if let emoji = room.lastEmoji, 
-           let sender = room.lastEmojiSender, 
-           let timestamp = room.lastEmojiTimestamp,
-           timestamp > (Date().timeIntervalSince1970 - 2000) { // Firebase timestamp is ms, but we'll check it
-            // Simple check: if it's new (last 3 seconds)
-            let now = Date().timeIntervalSince1970 * 1000
-            if now - timestamp < 3000 {
-                showEmoji(emoji, from: sender)
+        // Process Player 1 Emoji
+        if let emoji = room.player1Emoji, let timestamp = room.player1EmojiTimestamp, timestamp > p1EmojiLastTime {
+            p1EmojiLastTime = timestamp
+            showEmoji(emoji, for: room.player1ID)
+        }
+        
+        // Process Player 2 Emoji
+        if let emoji = room.player2Emoji, let timestamp = room.player2EmojiTimestamp, timestamp > p2EmojiLastTime {
+            p2EmojiLastTime = timestamp
+            if let p2ID = room.player2ID {
+                showEmoji(emoji, for: p2ID)
             }
         }
         
-        // Start tracking time when game begins
         if oldStatus != "playing" && room.status == "playing" && matchStartTime == nil {
             matchStartTime = Date()
             analyticsService.trackGameStart(difficulty: "Online", firstTurn: room.currentTurn == playerID ? "you" : "opponent")
-        }
-        if room.status == "waiting" {
-            matchStartTime = nil
         }
         
         if room.status == "abandoned" {
@@ -126,23 +131,17 @@ final class OnlineGameViewModel: ObservableObject {
             return
         }
         
-        // Update board array
-        for i in 0..<9 {
-            let row = i / 3
-            let col = i % 3
-            let symbol = room.board[i]
-            board[row][col] = (symbol == "X") ? .x : (symbol == "O" ? .o : .empty)
-        }
-        
-        // Trigger haptic if board changed
         if oldBoard != room.board {
             hapticService.triggerImpact(style: .light)
         }
         
-        // Check for win locally to show effects immediately for both
+        // When room becomes finished, handle the final match result once
+        if room.status == "finished" && !isMatchSaved {
+            handleFinalMatchEnd(winnerID: room.winnerID ?? "tie")
+        }
+        
         checkWin()
         
-        // Manage turn timer
         if room.status == "playing" && gameResultText == nil {
             startTurnTimer()
         } else {
@@ -151,47 +150,58 @@ final class OnlineGameViewModel: ObservableObject {
     }
     
     private func checkWin() {
-        guard let room = room else { return }
+        guard let room = room, room.status == "playing" else { return }
         
-        // Map board to CellState for the existing checkWin logic
+        // This check is for the current round
+        var roundWinner: String? = nil
+        
         if let winningPath = gameStore.checkWin(in: board, for: .x) {
             winningCells = winningPath
-            stopTurnTimer()
-            handleGameEnd(winnerID: room.player1ID)
+            roundWinner = room.player1ID
         } else if let winningPath = gameStore.checkWin(in: board, for: .o) {
             winningCells = winningPath
-            stopTurnTimer()
-            handleGameEnd(winnerID: room.player2ID ?? "")
+            roundWinner = room.player2ID ?? ""
         } else if gameStore.isBoardFull(board) {
+            roundWinner = "tie"
+        }
+        
+        if let winner = roundWinner {
             stopTurnTimer()
-            handleGameEnd(winnerID: "tie")
+            // Only report win if I am player 1 (host) to avoid double reporting
+            // or if I'm the one who made the move that ended the round
+            if playerID == room.player1ID {
+                // Short delay to let player see the winning move
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.onlineGameService.reportRoundWin(roomID: self.roomID, winnerID: winner)
+                }
+            }
         }
     }
     
-    private func handleGameEnd(winnerID: String) {
-        guard !isMatchSaved else { return }
+    private func handleFinalMatchEnd(winnerID: String) {
+        isMatchSaved = true
         
-        if room?.status == "playing" {
-            // Only one player needs to update the DB status
-            // Host (player1) will take responsibility
-            if playerID == room?.player1ID {
-                onlineGameService.setWinner(roomID: roomID, winnerID: winnerID)
-            }
-        }
-        
-        // Show effects
         if winnerID == playerID {
             showConfetti = true
-            gameResultText = "You Won!"
+            gameResultText = AppStrings.youWon
             hapticService.triggerNotification(type: .success)
             winStreak += 1
+            
+            let myName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
+            leaderboardService.updateScore(userID: playerID, name: myName, pointsChange: 3)
         } else if winnerID == "tie" {
-            gameResultText = "It's a Tie!"
+            gameResultText = AppStrings.itATie
             hapticService.triggerNotification(type: .warning)
+            
+            let myName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
+            leaderboardService.updateScore(userID: playerID, name: myName, pointsChange: 1)
         } else {
-            gameResultText = "You Lost!"
+            gameResultText = AppStrings.youLost
             hapticService.triggerNotification(type: .error)
             winStreak = 0
+            
+            let myName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
+            leaderboardService.updateScore(userID: playerID, name: myName, pointsChange: -1)
         }
         
         analyticsService.trackGameEnd(result: winnerID == playerID ? "humanWin" : (winnerID == "tie" ? "tie" : "opponentWin"))
@@ -200,43 +210,20 @@ final class OnlineGameViewModel: ObservableObject {
         saveToHistory(winnerID: winnerID, duration: duration)
         checkOnlineAchievements(winnerID: winnerID, duration: duration)
         matchStartTime = nil
-        isMatchSaved = true
     }
     
     private func saveToHistory(winnerID: String, duration: TimeInterval) {
         guard let room = room else { return }
         
-        let resultType: String
-        if winnerID == playerID {
-            resultType = "Win"
-        } else if winnerID == "tie" {
-            resultType = "Tie"
-        } else {
-            resultType = "Loss"
-        }
-        
+        let resultType: String = (winnerID == playerID) ? "Win" : (winnerID == "tie" ? "Tie" : "Loss")
         let myName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "You"
         let opponentName = (playerID == room.player1ID) ? (room.player2Name ?? "Opponent") : room.player1Name
-        
-        let winnerName: String?
-        if resultType == "Win" {
-            winnerName = myName
-        } else if resultType == "Loss" {
-            winnerName = opponentName
-        } else {
-            winnerName = nil
-        }
+        let winnerName: String? = (resultType == "Win") ? myName : (resultType == "Loss" ? opponentName : nil)
         
         let history = MatchHistory(
-            player1Name: myName,
-            player2Name: opponentName,
-            winnerName: winnerName,
-            date: Date(),
-            duration: duration,
-            difficulty: "Online",
-            resultType: resultType
+            player1Name: myName, player2Name: opponentName, winnerName: winnerName,
+            date: Date(), duration: duration, difficulty: "Online", resultType: resultType
         )
-        
         historyService.saveMatch(history)
     }
     
@@ -246,18 +233,12 @@ final class OnlineGameViewModel: ObservableObject {
         let moveCount = room?.board.filter { !$0.isEmpty }.count ?? 0
         
         let unlocked = achievementService.checkAchievements(
-            result: result,
-            difficulty: .hard, // online is always "hard" (real human)
-            duration: duration,
-            moveCount: moveCount,
-            winStreak: winStreak,
-            totalTies: totalTies
+            result: result, difficulty: .hard, duration: duration, 
+            moveCount: moveCount, winStreak: winStreak, totalTies: totalTies
         )
         
         if !unlocked.isEmpty {
-            withAnimation(.spring()) {
-                newAchievements = unlocked
-            }
+            withAnimation(.spring()) { newAchievements = unlocked }
         }
     }
     
@@ -273,15 +254,11 @@ final class OnlineGameViewModel: ObservableObject {
     // MARK: - Turn Timer
     
     private func startTurnTimer() {
-        // Only run timer for the current player's turn
         guard isMyTurn else {
             stopTurnTimer()
             return
         }
-        
-        // Don't restart if a timer is already running for this turn
         if turnTimer != nil { return }
-        
         turnCountdown = autoMoveTotalSeconds
         turnTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -320,15 +297,24 @@ final class OnlineGameViewModel: ObservableObject {
         hapticService.triggerImpact(style: .light)
     }
     
-    private func showEmoji(_ emoji: String, from senderID: String) {
-        activeEmoji = emoji
-        emojiSenderID = senderID
+    private func showEmoji(_ emoji: String, for playerID: String) {
+        let isP1 = playerID == room?.player1ID
         
-        // Hide after 2 seconds
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            if self.activeEmoji == emoji {
-                self.activeEmoji = nil
-                self.emojiSenderID = nil
+        if isP1 {
+            p1EmojiTask?.cancel()
+            p1Emoji = emoji
+            hapticService.triggerImpact(style: .light)
+            p1EmojiTask = Task {
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                if !Task.isCancelled { withAnimation { p1Emoji = nil } }
+            }
+        } else {
+            p2EmojiTask?.cancel()
+            p2Emoji = emoji
+            hapticService.triggerImpact(style: .light)
+            p2EmojiTask = Task {
+                try? await Task.sleep(nanoseconds: 2_500_000_000)
+                if !Task.isCancelled { withAnimation { p2Emoji = nil } }
             }
         }
     }
@@ -340,23 +326,19 @@ final class OnlineGameViewModel: ObservableObject {
     
     func quitGame() {
         onlineGameService.leaveRoom(roomID: roomID, playerID: playerID)
-        appModeStore.goHome()
+        appModeStore.goOnlineLobby()
     }
     
-    var isMyTurn: Bool {
-        room?.currentTurn == playerID
+    func copyToClipboard(_ text: String) {
+        UIPasteboard.general.string = text
+        hapticService.triggerNotification(type: .success)
+        toastManager.show(message: AppStrings.copied, type: .success)
     }
     
-    var mySymbol: CellState {
-        room?.player1ID == playerID ? .x : .o
-    }
-    
-    var qrCodeImage: UIImage? {
-        qrCodeService.generateQRCode(from: roomID)
-    }
-    
-    /// Only show winning line highlight to the winner, not the loser
+    var isMyTurn: Bool { room?.currentTurn == playerID }
+    var mySymbol: CellState { room?.player1ID == playerID ? .x : .o }
+    var qrCodeImage: UIImage? { qrCodeService.generateQRCode(from: roomID) }
     var displayWinningCells: [CellCoordinate] {
-        gameResultText == "You Won!" ? winningCells : []
+        gameResultText == AppStrings.youWon ? winningCells : []
     }
 }

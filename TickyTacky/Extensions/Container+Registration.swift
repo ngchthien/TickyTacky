@@ -59,6 +59,14 @@ extension Container{
     var qrCodeService: Factory<QRCodeService> {
         self { QRCodeService() }.singleton
     }
+
+    var toastManager: Factory<ToastManager> {
+        self { MainActor.assumeIsolated { ToastManager() } }.singleton
+    }
+
+    var leaderboardService: Factory<LeaderboardServiceProtocol> {
+        self { LeaderboardService() }.singleton
+    }
 }
 
 
