@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Factory
 
 protocol AchievementServiceProtocol {
     var unlockedIDs: Set<String> { get }
@@ -24,6 +25,7 @@ protocol AchievementServiceProtocol {
 
 final class AchievementService: AchievementServiceProtocol {
     @AppStorage("unlocked_achievements") private var unlockedIDsData: Data = Data()
+    @Injected(\.analyticsService) private var analyticsService
     
     var unlockedIDs: Set<String> {
         get {
@@ -41,6 +43,7 @@ final class AchievementService: AchievementServiceProtocol {
         if !current.contains(id) {
             current.insert(id)
             unlockedIDs = current
+            analyticsService.trackAchievement(id: id)
             // In a more complex app, we'd save the unlock date here in a dictionary
             // [String: Date], but since we only have a Set<String> for IDs right now,
             // we'll keep it simple.

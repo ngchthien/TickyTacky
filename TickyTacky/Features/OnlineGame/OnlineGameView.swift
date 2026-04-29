@@ -19,10 +19,14 @@ struct OnlineGameView: View {
             backgroundGradient
             
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
+                VStack(spacing: 12) {
                     headerView
                     
                     playersSection
+                    
+                    if viewModel.room?.status == "playing" {
+                        emojiPickerView
+                    }
                     
                     Group {
                         if viewModel.room?.status == "waiting" {
@@ -78,52 +82,56 @@ private extension OnlineGameView {
     }
     
     var headerView: some View {
-        VStack(spacing: 8) {
-            Text("ROOM CODE")
-                .font(.caption.bold())
-                .foregroundStyle(Color.appTheme.secondaryText)
-            
-            HStack(spacing: 12) {
-                Text(viewModel.roomID)
-                    .font(.system(size: 40, weight: .black, design: .monospaced))
-                    .foregroundStyle(Color.appTheme.accent)
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("ROOM CODE")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(Color.appTheme.secondaryText)
                 
-                HStack(spacing: 8) {
-                    Button(action: {
-                        UIPasteboard.general.string = viewModel.roomID
-                    }) {
-                        Image(systemName: "doc.on.doc.fill")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color.appTheme.accent)
-                            .padding(8)
-                            .background(Color.appTheme.accent.opacity(0.1))
-                            .clipShape(Circle())
-                    }
-                    
-                    ShareLink(item: "Join my TickyTacky game! Room Code: \(viewModel.roomID)") {
-                        Image(systemName: "square.and.arrow.up.fill")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color.appTheme.accent)
-                            .padding(8)
-                            .background(Color.appTheme.accent.opacity(0.1))
-                            .clipShape(Circle())
-                    }
-                    
-                    Button(action: {
-                        viewModel.showQRCode = true
-                        viewModel.hapticService.triggerImpact(style: .light)
-                    }) {
-                        Image(systemName: "qrcode")
-                            .font(.system(size: 14))
-                            .foregroundStyle(Color.appTheme.accent)
-                            .padding(8)
-                            .background(Color.appTheme.accent.opacity(0.1))
-                            .clipShape(Circle())
-                    }
+                Text(viewModel.roomID)
+                    .font(.system(size: 24, weight: .black, design: .monospaced))
+                    .foregroundStyle(Color.appTheme.accent)
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 6) {
+                Button(action: {
+                    UIPasteboard.general.string = viewModel.roomID
+                    viewModel.hapticService.triggerImpact(style: .light)
+                }) {
+                    Image(systemName: "doc.on.doc.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.appTheme.accent)
+                        .padding(8)
+                        .background(Color.appTheme.accent.opacity(0.1))
+                        .clipShape(Circle())
+                }
+                
+                ShareLink(item: "Join my TickyTacky game! Room Code: \(viewModel.roomID)") {
+                    Image(systemName: "square.and.arrow.up.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.appTheme.accent)
+                        .padding(8)
+                        .background(Color.appTheme.accent.opacity(0.1))
+                        .clipShape(Circle())
+                }
+                
+                Button(action: {
+                    viewModel.showQRCode = true
+                    viewModel.hapticService.triggerImpact(style: .light)
+                }) {
+                    Image(systemName: "qrcode")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.appTheme.accent)
+                        .padding(8)
+                        .background(Color.appTheme.accent.opacity(0.1))
+                        .clipShape(Circle())
                 }
             }
         }
-        .padding(.top, 10)
+        .padding(.horizontal)
+        .padding(.top, 4)
     }
     
     var qrCodeSheet: some View {
@@ -212,16 +220,25 @@ private extension OnlineGameView {
     }
     
     var playersSection: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             // Player 1 Slot
-            VStack(spacing: 10) {
+            VStack(spacing: 6) {
                 if let p1Name = viewModel.room?.player1Name, viewModel.room?.player1ID != nil {
-                    PlayerInGameView(
-                        player: PlayerProfile(name: .custom(p1Name), image: .playerBoy1, type: .human),
-                        orientation: .left,
-                        isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player1ID && viewModel.room?.status == "playing",
-                        winsCount: 0
-                    )
+                    ZStack(alignment: .topTrailing) {
+                        PlayerInGameView(
+                            player: PlayerProfile(name: .custom(p1Name), image: .playerBoy1, type: .human),
+                            orientation: .left,
+                            isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player1ID && viewModel.room?.status == "playing",
+                            winsCount: 0
+                        )
+                        .scaleEffect(0.9)
+                        
+                        if viewModel.activeEmoji != nil && viewModel.emojiSenderID == viewModel.room?.player1ID {
+                            emojiBubble(viewModel.activeEmoji!)
+                                .offset(x: 10, y: -20)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
                     readyIndicator(isReady: viewModel.room?.player1Ready ?? false)
                 } else {
                     emptyPlayerSlot(title: "Host")
@@ -229,26 +246,35 @@ private extension OnlineGameView {
             }
             
             Text("VS")
-                .font(.system(size: 14, weight: .black))
+                .font(.system(size: 12, weight: .black))
                 .foregroundStyle(Color.appTheme.accent.opacity(0.5))
-                .padding(.horizontal, 4)
             
             // Player 2 Slot
-            VStack(spacing: 10) {
+            VStack(spacing: 6) {
                 if let p2Name = viewModel.room?.player2Name, viewModel.room?.player2ID != nil {
-                    PlayerInGameView(
-                        player: PlayerProfile(name: .custom(p2Name), image: .playerBoy2, type: .human),
-                        orientation: .right,
-                        isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player2ID && viewModel.room?.status == "playing",
-                        winsCount: 0
-                    )
+                    ZStack(alignment: .topLeading) {
+                        PlayerInGameView(
+                            player: PlayerProfile(name: .custom(p2Name), image: .playerBoy2, type: .human),
+                            orientation: .right,
+                            isCurrentPlayer: viewModel.room?.currentTurn == viewModel.room?.player2ID && viewModel.room?.status == "playing",
+                            winsCount: 0
+                        )
+                        .scaleEffect(0.9)
+                        
+                        if viewModel.activeEmoji != nil && viewModel.emojiSenderID == viewModel.room?.player2ID {
+                            emojiBubble(viewModel.activeEmoji!)
+                                .offset(x: -10, y: -20)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
                     readyIndicator(isReady: viewModel.room?.player2Ready ?? false)
                 } else {
                     emptyPlayerSlot(title: "Opponent")
                 }
             }
         }
-        .padding(20)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
         .background(Color.appTheme.cellBackground.opacity(0.4))
         .cornerRadius(.overall)
         .overlay(
@@ -333,20 +359,40 @@ private extension OnlineGameView {
                 .multilineTextAlignment(.center)
             
             VStack(spacing: 16) {
-                Button(action: viewModel.restartGame) {
-                    HStack {
-                        Image(systemName: "arrow.counterclockwise")
-                        Text("Play Again")
+                if viewModel.myRematchRequested {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .tint(Color.appTheme.accent)
+                        Text(viewModel.opponentRematchRequested ? "Restarting..." : "Waiting for opponent...")
+                            .font(.subheadline.bold())
+                            .foregroundStyle(Color.appTheme.secondaryText)
                     }
-                    .font(.headline.bold())
-                    .foregroundStyle(Color.appTheme.accentContrastText)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color.appTheme.accent)
-                    .cornerRadius(.button)
-                    .shadow(.regular)
+                } else {
+                    Button(action: viewModel.requestRematch) {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Play Again")
+                        }
+                        .font(.headline.bold())
+                        .foregroundStyle(Color.appTheme.accentContrastText)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.appTheme.accent)
+                        .cornerRadius(.button)
+                        .shadow(.regular)
+                    }
+                    .button(.press) {}
                 }
-                .button(.press) {}
+                
+                if viewModel.opponentRematchRequested && !viewModel.myRematchRequested {
+                    Text("Opponent wants a rematch!")
+                        .font(.caption.bold())
+                        .foregroundStyle(Color.appTheme.accent)
+                        .padding(8)
+                        .background(Color.appTheme.accent.opacity(0.1))
+                        .cornerRadius(8)
+                        .transition(.scale)
+                }
                 
                 Button(action: viewModel.quitGame) {
                     Text("Quit to Menu")
@@ -360,10 +406,10 @@ private extension OnlineGameView {
     }
     
     var boardSection: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 12) {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Text(viewModel.isMyTurn ? "Your Turn!" : "Waiting for opponent...")
-                    .font(.headline.bold())
+                    .font(.subheadline.bold())
                     .foregroundStyle(viewModel.isMyTurn ? Color.appTheme.accent : Color.appTheme.secondaryText)
                 
                 if viewModel.isMyTurn {
@@ -378,6 +424,7 @@ private extension OnlineGameView {
                     viewModel.playMove(index: index)
                 }
             )
+            .scaleEffect(0.95)
             .disabled(!viewModel.isMyTurn)
             .opacity(viewModel.isMyTurn ? 1 : 0.8)
         }
@@ -408,10 +455,45 @@ private extension OnlineGameView {
     var quitButton: some View {
         Button(action: viewModel.quitGame) {
             Text("Quit Match")
-                .font(.headline)
+                .font(.subheadline.bold())
                 .foregroundStyle(.red)
-                .padding()
+                .padding(.vertical, 8)
         }
+    }
+    
+    var emojiPickerView: some View {
+        HStack(spacing: 8) {
+            ForEach(["😂", "😎", "😡", "👏", "😮", "❤️"], id: \.self) { emoji in
+                Button(action: { viewModel.sendEmoji(emoji) }) {
+                    Text(emoji)
+                        .font(.system(size: 20))
+                        .padding(6)
+                        .background(Color.appTheme.cellBackground)
+                        .clipShape(Circle())
+                        .shadow(.light)
+                }
+                .button(.press) {}
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    func emojiBubble(_ emoji: String) -> some View {
+        Text(emoji)
+            .font(.system(size: 40))
+            .padding(10)
+            .background(
+                Circle()
+                    .fill(Color.appTheme.cellBackground)
+                    .shadow(radius: 5)
+            )
+            .overlay(
+                Image(systemName: "bubble.right.fill")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.appTheme.cellBackground)
+                    .offset(x: -15, y: 15),
+                alignment: .bottomLeading
+            )
     }
 }
 

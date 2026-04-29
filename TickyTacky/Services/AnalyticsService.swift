@@ -6,29 +6,47 @@
 //
 
 import Foundation
+import FirebaseAnalytics
 
 protocol AnalyticsProtocol {
-    func trackGameStart(difficulty: Difficulty, firstTurn: FirstTurn)
-    func trackMove(player: PlayerType, position: CellCoordinate)
-    func trackGameEnd(result: GameResult)
-    func trackError(_ error: GameError)
+    func trackGameStart(difficulty: String, firstTurn: String)
+    func trackGameEnd(result: String)
+    func trackError(_ error: String)
+    func trackRoomAction(action: String, method: String)
+    func trackAchievement(id: String)
 }
 
 final class AnalyticsService: AnalyticsProtocol {
     
-    func trackGameStart(difficulty: Difficulty, firstTurn: FirstTurn) {
-        print("📊 Analytics: Game Started | Difficulty: \(difficulty) | First Turn: \(firstTurn)")
+    func trackGameStart(difficulty: String, firstTurn: String) {
+        Analytics.logEvent("game_start", parameters: [
+            "difficulty": difficulty,
+            "first_turn": firstTurn
+        ])
     }
     
-    func trackMove(player: PlayerType, position: CellCoordinate) {
-        print("📊 Analytics: Move | Player: \(player) | Position: (\(position.row), \(position.col))")
+    func trackGameEnd(result: String) {
+        Analytics.logEvent("game_end", parameters: [
+            "result": result
+        ])
     }
     
-    func trackGameEnd(result: GameResult) {
-        print("📊 Analytics: Game Ended | Result: \(result)")
+    func trackRoomAction(action: String, method: String) {
+        Analytics.logEvent("online_room_action", parameters: [
+            "action": action, // "create" or "join"
+            "method": method  // "manual" or "qr"
+        ])
     }
     
-    func trackError(_ error: GameError) {
-        print("📊 Analytics: Error | \(error.localizedDescription)")
+    func trackAchievement(id: String) {
+        Analytics.logEvent("achievement_unlocked", parameters: [
+            "achievement_id": id
+        ])
+    }
+    
+    func trackError(_ error: String) {
+        Analytics.logEvent("game_error", parameters: [
+            "error_description": error
+        ])
     }
 }

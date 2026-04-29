@@ -19,6 +19,7 @@ final class OnlineLobbyViewModel: ObservableObject {
     @Injected(\.appModeStore) private var appModeStore
     @Injected(\.onlineGameService) private var onlineGameService
     @Injected(\.hapticService) var hapticService
+    @Injected(\.analyticsService) private var analyticsService
     
     init() {
         self.playerName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
@@ -42,6 +43,7 @@ final class OnlineLobbyViewModel: ObservableObject {
                 let code = try await onlineGameService.createRoom(playerName: playerName)
                 UserDefaults.standard.set(playerName, forKey: UserDefaultKeys.playerName)
                 hapticService.triggerImpact(style: .medium)
+                analyticsService.trackRoomAction(action: "create", method: "manual")
                 isLoading = false
                 appModeStore.goOnlineGame(roomID: code)
             } catch {
@@ -51,7 +53,7 @@ final class OnlineLobbyViewModel: ObservableObject {
         }
     }
     
-    func joinRoom() {
+    func joinRoom(method: String = "manual") {
         guard !playerName.isEmpty else {
             errorMessage = "Please enter your name"
             return
@@ -69,6 +71,7 @@ final class OnlineLobbyViewModel: ObservableObject {
                 try await onlineGameService.joinRoom(roomID: roomCode, playerName: playerName)
                 UserDefaults.standard.set(playerName, forKey: UserDefaultKeys.playerName)
                 hapticService.triggerImpact(style: .medium)
+                analyticsService.trackRoomAction(action: "join", method: method)
                 isLoading = false
                 appModeStore.goOnlineGame(roomID: roomCode)
             } catch {

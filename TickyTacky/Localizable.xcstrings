@@ -406,6 +406,9 @@
         }
       }
     },
+    "Opponent wants a rematch!" : {
+
+    },
     "Play Again" : {
       "localizations" : {
         "vi" : {
@@ -465,6 +468,9 @@
           }
         }
       }
+    },
+    "Restarting..." : {
+
     },
     "ROOM CODE" : {
       "localizations" : {

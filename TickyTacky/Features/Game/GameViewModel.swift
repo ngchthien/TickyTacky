@@ -128,7 +128,7 @@ private extension GameViewModel {
         self.moveCount = 0
         self.newAchievements = []
         
-        analyticsService.trackGameStart(difficulty: difficulty, firstTurn: gameSetupStore.selectedFirstTurn)
+        analyticsService.trackGameStart(difficulty: difficulty.rawValue, firstTurn: gameSetupStore.selectedFirstTurn.rawValue)
     }
     
     func getFirstTurnPlayer() -> Player {
@@ -164,7 +164,6 @@ private extension GameViewModel {
             
             
             hapticService.triggerImpact(style: .light)
-            analyticsService.trackMove(player: currentPlayer.isBot ? .bot : .human, position: .init(row: row, col: col))
             
             if let winningCellCordinatesPath = gameStore.checkWin(in: board, for: currentPlayer.cellSymbol) {
                 Task {
@@ -210,12 +209,12 @@ private extension GameViewModel {
                 hapticService.triggerNotification(type: .error)
             }
             
-            analyticsService.trackGameEnd(result: winner.isBot ? .botWin : .humanWin)
+            analyticsService.trackGameEnd(result: winner.isBot ? GameResult.botWin.rawValue : GameResult.humanWin.rawValue)
         } else {
             nextStartingPlayer = otherPlayer
             transitionGameState(to: .tied)
             hapticService.triggerNotification(type: .warning)
-            analyticsService.trackGameEnd(result: .tie)
+            analyticsService.trackGameEnd(result: GameResult.tie.rawValue)
         }
         
         saveGameToHistory(winner: winner)
@@ -275,7 +274,7 @@ private extension GameViewModel {
     func handleError(_ error: GameError) {
         self.error = error
         errorHandlerService.handle(error)
-        analyticsService.trackError(error)
+        analyticsService.trackError(error.localizedDescription)
     }
     
     func triggerTie() {

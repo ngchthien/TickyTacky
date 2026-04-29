@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum GameResult {
+enum GameResult: String {
     case humanWin
     case botWin
     case tie
