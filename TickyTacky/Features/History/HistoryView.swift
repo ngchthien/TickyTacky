@@ -127,7 +127,7 @@ struct HistoryRow: View {
                 
                 Spacer()
                 
-                Text(match.difficulty.uppercased())
+                Text(LocalizedStringKey(match.difficulty.uppercased()))
                     .font(.system(size: 10, weight: .black))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -181,7 +181,7 @@ struct HistoryRow: View {
     }
     
     var resultTag: some View {
-        Text(match.resultType.uppercased())
+        Text(LocalizedStringKey(match.resultType.uppercased()))
             .font(.caption2.bold())
             .foregroundStyle(.white)
             .padding(.horizontal, 12)

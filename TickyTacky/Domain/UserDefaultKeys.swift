@@ -8,8 +8,8 @@
 import Foundation
 
 
-enum UserDefaultKeys{
-  static let isDarkMode = "isDarkMode"
-  
-  
+enum UserDefaultKeys {
+    static let isDarkMode = "isDarkMode"
+    static let playerName = "player_name"
 }
+

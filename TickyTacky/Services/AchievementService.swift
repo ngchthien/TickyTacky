@@ -41,6 +41,9 @@ final class AchievementService: AchievementServiceProtocol {
         if !current.contains(id) {
             current.insert(id)
             unlockedIDs = current
+            // In a more complex app, we'd save the unlock date here in a dictionary
+            // [String: Date], but since we only have a Set<String> for IDs right now,
+            // we'll keep it simple.
         }
     }
     

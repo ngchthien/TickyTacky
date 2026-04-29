@@ -51,6 +51,14 @@ extension Container{
     var achievementService: Factory<AchievementServiceProtocol> {
         self { AchievementService() }.singleton
     }
+
+    var onlineGameService: Factory<OnlineGameServiceProtocol> {
+        self { OnlineGameService() }.singleton
+    }
+
+    var qrCodeService: Factory<QRCodeService> {
+        self { QRCodeService() }.singleton
+    }
 }
 
 

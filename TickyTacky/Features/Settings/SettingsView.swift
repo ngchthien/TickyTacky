@@ -19,6 +19,7 @@ struct SettingsView: View {
                 
                 ScrollView {
                     VStack(spacing: 24) {
+                        profileSection
                         generalSection
                         appearanceSection
                         languageSection
@@ -75,6 +76,32 @@ private extension SettingsView {
                 .frame(width: 44, height: 44)
         }
         .padding()
+    }
+    
+    var profileSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Profile")
+            
+            HStack(spacing: 16) {
+                Image(systemName: "person.circle.fill")
+                    .font(.title)
+                    .foregroundStyle(Color.appTheme.accent)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Display Name")
+                        .font(.caption.bold())
+                        .foregroundStyle(Color.appTheme.secondaryText)
+                    TextField("Enter your name", text: $viewModel.playerName)
+                        .font(.headline)
+                        .foregroundStyle(Color.appTheme.text)
+                        .submitLabel(.done)
+                }
+            }
+            .padding()
+            .background(Color.appTheme.cellBackground)
+            .cornerRadius(.overall)
+            .shadow(.light)
+        }
     }
     
     var generalSection: some View {

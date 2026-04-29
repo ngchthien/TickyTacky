@@ -41,13 +41,18 @@ private extension SelectionGroupView {
     func optionView(for option: Option) -> some View {
         let isSelected = selected == option
         return Text(option.description)
-            .fontWeight(.medium)
+            .font(.subheadline)
+            .fontWeight(.semibold)
             .foregroundStyle(isSelected ? Color.appTheme.accentContrastText : Color.appTheme.secondaryText)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(isSelected ? Color.appTheme.info.opacity(0.6) : Color.appTheme.info.opacity(0.2))
+            .padding(.vertical, 14)
+            .background(isSelected ? Color.appTheme.accent : Color.appTheme.cellBackground.opacity(0.4))
             .cornerRadius(.button)
-            .shadow(.light)
+            .shadow(isSelected ? .regular : .none)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppCornerRadius.button.value)
+                    .stroke(isSelected ? Color.clear : Color.appTheme.divider.opacity(0.3), lineWidth: 1)
+            )
     }
     
     func selectOption(_ option: Option) {

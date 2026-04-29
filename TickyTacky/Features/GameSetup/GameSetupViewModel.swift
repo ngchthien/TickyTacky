@@ -43,6 +43,14 @@ final class GameSetupViewModel: ObservableObject {
     func goSettings() {
         appModeStore.goSettingsMode()
     }
+
+    func goOnline() {
+        appModeStore.goOnlineLobby()
+    }
+
+    func goHome() {
+        appModeStore.goHome()
+    }
 }
 
 private extension GameSetupViewModel {

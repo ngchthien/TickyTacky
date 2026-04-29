@@ -13,13 +13,14 @@ import Factory
 final class SettingsViewModel: ObservableObject {
     @AppStorage(UserDefaultKeys.isDarkMode) var isDarkMode = true
     @AppStorage("isHapticEnabled") var isHapticEnabled = true
+    @AppStorage(UserDefaultKeys.playerName) var playerName: String = "Player"
     
     @Injected(\.appModeStore) private var appModeStore
     
     init() {}
     
     func goBack() {
-        appModeStore.goSetupMode()
+        appModeStore.goBack()
     }
     
     func openSystemSettings() {

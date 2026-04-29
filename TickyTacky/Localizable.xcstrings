@@ -11,6 +11,12 @@
             "state" : "new",
             "value" : "%1$lld of %2$lld unlocked"
           }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã mở khóa %1$lld/%2$lld"
+          }
         }
       }
     },
@@ -23,20 +29,58 @@
     "🤝" : {
 
     },
-    "1.0.0" : {
-
-    },
     "Achievement Unlocked!" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã đạt thành tích!"
+          }
+        }
+      }
     },
     "Achievements" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thành tích"
+          }
+        }
+      }
+    },
+    "Align the QR code within the frame to join automatically." : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Căn chỉnh mã QR vào khung để tham gia tự động."
+          }
+        }
+      }
     },
     "An legendary battle has ended." : {
 
     },
-    "Antigravity" : {
-
+    "ARE YOU READY?" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BẠN ĐÃ SẴN SÀNG?"
+          }
+        }
+      }
+    },
+    "BATTLE OF THE SYMBOLS" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TRẬN CHIẾN CỦA CÁC BIỂU TƯỢNG"
+          }
+        }
+      }
     },
     "Button Regular Shadow" : {
 
@@ -44,11 +88,48 @@
     "Calculate" : {
 
     },
+    "Challenge Players Worldwide" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thách đấu người chơi toàn thế giới"
+          }
+        }
+      }
+    },
     "Change Language" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thay đổi ngôn ngữ"
+          }
+        }
+      }
+    },
+    "Code (e.g. 1234)" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mã (ví dụ: 1234)"
+          }
+        }
+      }
     },
     "Continue" : {
 
+    },
+    "Create New Room" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạo phòng mới"
+          }
+        }
+      }
     },
     "Dark Mode" : {
       "extractionState" : "manual",
@@ -61,9 +142,6 @@
         }
       }
     },
-    "Developer" : {
-
-    },
     "Difficulty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -71,6 +149,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Độ khó"
+          }
+        }
+      }
+    },
+    "Display Name" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tên hiển thị"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xong"
           }
         }
       }
@@ -86,8 +184,36 @@
         }
       }
     },
+    "EASY" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DỄ"
+          }
+        }
+      }
+    },
+    "Enter your name" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhập tên của bạn"
+          }
+        }
+      }
+    },
     "Get Started" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bắt đầu ngay"
+          }
+        }
+      }
     },
     "Great minds think alike." : {
 
@@ -114,8 +240,107 @@
         }
       }
     },
+    "HARD" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "KHÓ"
+          }
+        }
+      }
+    },
+    "HOST A GAME" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TẠO TRẬN ĐẤU"
+          }
+        }
+      }
+    },
+    "I'M READY!" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TÔI ĐÃ SẴN SÀNG!"
+          }
+        }
+      }
+    },
     "It's a Tie!" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kết quả Hòa!"
+          }
+        }
+      }
+    },
+    "Join" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tham gia"
+          }
+        }
+      }
+    },
+    "JOIN A GAME" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "THAM GIA TRẬN ĐẤU"
+          }
+        }
+      }
+    },
+    "LOCAL BATTLE" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ĐẤU TẠI CHỖ"
+          }
+        }
+      }
+    },
+    "Local Match" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đấu tại chỗ"
+          }
+        }
+      }
+    },
+    "Loss" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thua"
+          }
+        }
+      }
+    },
+    "LOSS" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "THUA"
+          }
+        }
+      }
     },
     "Match History" : {
       "extractionState" : "manual",
@@ -150,11 +375,129 @@
         }
       }
     },
+    "MEDIUM" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TRUNG BÌNH"
+          }
+        }
+      }
+    },
     "No matches yet" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chưa có trận đấu nào"
+          }
+        }
+      }
+    },
+    "Online Battle" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đấu Online"
+          }
+        }
+      }
     },
     "Play Again" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chơi lại"
+          }
+        }
+      }
+    },
+    "Play with Computer or Friend" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chơi với Máy hoặc Bạn bè"
+          }
+        }
+      }
+    },
+    "Quit Match" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thoát trận"
+          }
+        }
+      }
+    },
+    "Quit to Menu" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Về Menu chính"
+          }
+        }
+      }
+    },
+    "Ready" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sẵn sàng"
+          }
+        }
+      }
+    },
+    "READY TO PLAY" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SẴN SÀNG CHƠI"
+          }
+        }
+      }
+    },
+    "ROOM CODE" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MÃ PHÒNG"
+          }
+        }
+      }
+    },
+    "Room Code: %@" : {
 
+    },
+    "Scan Room QR Code" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quét mã QR phòng"
+          }
+        }
+      }
+    },
+    "SCAN TO JOIN" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QUÉT ĐỂ THAM GIA"
+          }
+        }
+      }
     },
     "Settings" : {
       "extractionState" : "manual",
@@ -163,6 +506,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cài đặt"
+          }
+        }
+      }
+    },
+    "Share code %@ with a friend." : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chia sẻ mã %@ với bạn bè."
+          }
+        }
+      }
+    },
+    "Share the 4-digit code with your friend to start playing." : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chia sẻ mã 4 số với bạn bè để bắt đầu chơi."
           }
         }
       }
@@ -178,6 +541,9 @@
         }
       }
     },
+    "START BATTLE" : {
+
+    },
     "Subtitle" : {
 
     },
@@ -187,26 +553,75 @@
     "THE CHAMPION" : {
 
     },
-    "THE ULTIMATE CHALLENGE" : {
-
-    },
     "Ticky Tacky" : {
 
+    },
+    "Tie" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hòa"
+          }
+        }
+      }
+    },
+    "TIE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HÒA"
+          }
+        }
+      }
     },
     "Title" : {
 
     },
-    "Version" : {
-
-    },
     "Victory!" : {
-
-    },
-    "vs" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiến thắng!"
+          }
+        }
+      }
     },
     "VS" : {
 
+    },
+    "Waiting" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang chờ"
+          }
+        }
+      }
+    },
+    "Waiting for an opponent..." : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang chờ đối thủ..."
+          }
+        }
+      }
+    },
+    "Waiting for opponent..." : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang chờ đối thủ..."
+          }
+        }
+      }
     },
     "Who goes first?" : {
       "extractionState" : "manual",
@@ -219,14 +634,96 @@
         }
       }
     },
+    "Win" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thắng"
+          }
+        }
+      }
+    },
+    "WIN" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "THẮNG"
+          }
+        }
+      }
+    },
     "WINNER" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NGƯỜI THẮNG"
+          }
+        }
+      }
+    },
+    "You Lost!" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bạn đã thua!"
+          }
+        }
+      }
+    },
+    "You Won!" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bạn đã thắng!"
+          }
+        }
+      }
     },
     "Your battle history will appear here." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lịch sử đấu của bạn sẽ hiện ở đây."
+          }
+        }
+      }
+    },
+    "YOUR PROFILE" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HỒ SƠ CỦA BẠN"
+          }
+        }
+      }
     },
     "Your Progress" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiến trình"
+          }
+        }
+      }
+    },
+    "Your Turn!" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đến lượt bạn!"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
