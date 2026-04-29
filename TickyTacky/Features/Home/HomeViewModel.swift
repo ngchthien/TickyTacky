@@ -34,4 +34,9 @@ final class HomeViewModel: ObservableObject {
     func goSettings() {
         appModeStore.goSettingsMode()
     }
+    
+    func goLeaderboard() {
+        hapticService.triggerImpact(style: .light)
+        appModeStore.goLeaderboard()
+    }
 }

@@ -50,6 +50,11 @@ final class AppModeLiveStore: ObservableObject{
     updateMode(.onlineGame(roomID))
   }
   
+  func goLeaderboard()
+  {
+    updateMode(.leaderboard)
+  }
+  
   func goBack() {
     appMode = previousMode
   }

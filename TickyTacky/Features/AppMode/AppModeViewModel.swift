@@ -25,10 +25,7 @@ private extension AppModeViewModel{
   {
     appModeStore.$appMode
       .receive(on: DispatchQueue.main)
-      .sink{[weak self] _ in
-        guard let self else {return}
-         updateAppMode()
-      }.store(in: &cancellables)
+      .assign(to: &$appMode)
   }
   func updateAppMode()
   {

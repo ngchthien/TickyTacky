@@ -6,6 +6,9 @@
 //
 
 import Foundation
+import UIKit
+import Factory
+import FirebaseCrashlytics
 
 protocol ErrorHandlerProtocol {
     func handle(_ error: GameError)
@@ -13,17 +16,27 @@ protocol ErrorHandlerProtocol {
 }
 
 final class ErrorHandlerService: ErrorHandlerProtocol {
+    @Injected(\.hapticService) private var hapticService
+    @Injected(\.analyticsService) private var analyticsService
+    @Injected(\.toastManager) private var toastManager
+
     func handle(_ error: GameError) {
         logError(error)
-        // we do something with it
-        // Could add user notification, crash reporting, etc.
+        
+        // 1. Production Tracking (Firebase Analytics & Crashlytics)
+        analyticsService.trackError(error.localizedDescription)
+        Crashlytics.crashlytics().record(error: error)
+        
+        // 2. Physical Feedback
+        hapticService.triggerNotification(type: .error)
+        
+        // 3. User Notification (Toast)
+        toastManager.show(message: error.localizedDescription, type: .error)
     }
     
     func logError(_ error: GameError) {
         #if DEBUG
         print("🎮 Game Error: \(error.errorDescription ?? "Unknown Error")")
         #endif
-        
-        // In production, send to analytics/crash reporting
     }
 }

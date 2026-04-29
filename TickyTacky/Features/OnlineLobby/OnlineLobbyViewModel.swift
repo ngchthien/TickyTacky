@@ -8,30 +8,51 @@
 import SwiftUI
 import Factory
 import Combine
+
 @MainActor
-final class OnlineLobbyViewModel: ObservableObject {
+class OnlineLobbyViewModel: ObservableObject {
     @Published var playerName: String = ""
     @Published var roomCode: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var showScanner: Bool = false
+    @Published var navigationPath: [OnlineLobbyDestination] = []
+    
+    enum OnlineLobbyDestination: Hashable {
+        case privateJoin
+    }
+    
+    private var currentPlayerID: String?
     
     @Injected(\.appModeStore) private var appModeStore
     @Injected(\.onlineGameService) private var onlineGameService
     @Injected(\.hapticService) var hapticService
     @Injected(\.analyticsService) private var analyticsService
+    @Injected(\.toastManager) private var toastManager
     
     init() {
         self.playerName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
     }
     
     func goBack() {
-        appModeStore.goBack()
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
+        } else {
+            appModeStore.goBack()
+        }
+    }
+    
+    func navigateTo(_ destination: OnlineLobbyDestination) {
+        navigationPath.append(destination)
     }
     
     func createRoom() {
+        createPublicRoom(isPublic: false)
+    }
+    
+    func createPublicRoom(isPublic: Bool) {
         guard !playerName.isEmpty else {
-            errorMessage = "Please enter your name"
+            errorMessage = AppStrings.enterNameError
             return
         }
         
@@ -40,12 +61,14 @@ final class OnlineLobbyViewModel: ObservableObject {
         
         Task {
             do {
-                let code = try await onlineGameService.createRoom(playerName: playerName)
+                let result = try await onlineGameService.createRoom(playerName: playerName, isPublic: isPublic)
+                self.currentPlayerID = result.playerID
+                UserDefaults.standard.set(result.playerID, forKey: "online_player_id")
                 UserDefaults.standard.set(playerName, forKey: UserDefaultKeys.playerName)
                 hapticService.triggerImpact(style: .medium)
-                analyticsService.trackRoomAction(action: "create", method: "manual")
+                analyticsService.trackRoomAction(action: "create", method: isPublic ? "public" : "private")
                 isLoading = false
-                appModeStore.goOnlineGame(roomID: code)
+                appModeStore.goOnlineGame(roomID: result.roomID)
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
@@ -55,11 +78,11 @@ final class OnlineLobbyViewModel: ObservableObject {
     
     func joinRoom(method: String = "manual") {
         guard !playerName.isEmpty else {
-            errorMessage = "Please enter your name"
+            errorMessage = AppStrings.enterNameError
             return
         }
         guard roomCode.count == 4 else {
-            errorMessage = "Please enter a 4-digit code"
+            errorMessage = AppStrings.enterCodeError
             return
         }
         
@@ -68,16 +91,28 @@ final class OnlineLobbyViewModel: ObservableObject {
         
         Task {
             do {
-                try await onlineGameService.joinRoom(roomID: roomCode, playerName: playerName)
+                let playerID = try await onlineGameService.joinRoom(roomID: roomCode, playerName: playerName)
+                self.currentPlayerID = playerID
+                UserDefaults.standard.set(playerID, forKey: "online_player_id")
                 UserDefaults.standard.set(playerName, forKey: UserDefaultKeys.playerName)
                 hapticService.triggerImpact(style: .medium)
                 analyticsService.trackRoomAction(action: "join", method: method)
-                isLoading = false
-                appModeStore.goOnlineGame(roomID: roomCode)
+                
+                // Ensure UI updates on main thread and after a tiny delay to allow Firebase to settle
+                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s
+                
+                self.isLoading = false
+                self.appModeStore.goOnlineGame(roomID: self.roomCode)
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
             }
         }
+    }
+    
+    func copyToClipboard(_ text: String) {
+        UIPasteboard.general.string = text
+        hapticService.triggerNotification(type: .success)
+        toastManager.show(message: AppStrings.copied, type: .success)
     }
 }
