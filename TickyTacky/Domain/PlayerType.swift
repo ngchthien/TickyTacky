@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PlayerType: Equatable {
+enum PlayerType: String, Equatable {
   case human
   case bot
 }

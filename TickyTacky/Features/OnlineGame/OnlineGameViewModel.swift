@@ -32,6 +32,7 @@ final class OnlineGameViewModel: ObservableObject {
     @Injected(\.botEngineService) private var botEngine
     @Injected(\.achievementService) private var achievementService
     @Injected(\.qrCodeService) private var qrCodeService
+    @Injected(\.analyticsService) private var analyticsService
     
     @AppStorage("online_win_streak") private var winStreak: Int = 0
     
@@ -87,6 +88,7 @@ final class OnlineGameViewModel: ObservableObject {
         // Start tracking time when game begins
         if oldStatus != "playing" && room.status == "playing" && matchStartTime == nil {
             matchStartTime = Date()
+            analyticsService.trackGameStart(difficulty: "Online", firstTurn: room.currentTurn == playerID ? "you" : "opponent")
         }
         if room.status == "waiting" {
             matchStartTime = nil
@@ -164,6 +166,8 @@ final class OnlineGameViewModel: ObservableObject {
             hapticService.triggerNotification(type: .error)
             winStreak = 0
         }
+        
+        analyticsService.trackGameEnd(result: winnerID == playerID ? "humanWin" : (winnerID == "tie" ? "tie" : "opponentWin"))
         
         let duration = matchStartTime.map { Date().timeIntervalSince($0) } ?? 0
         saveToHistory(winnerID: winnerID, duration: duration)

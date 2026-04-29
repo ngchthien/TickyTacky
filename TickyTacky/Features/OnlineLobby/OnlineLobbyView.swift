@@ -145,7 +145,7 @@ private extension OnlineLobbyView {
                         .clipShape(Circle())
                 }
                 
-                Button(action: viewModel.joinRoom) {
+                Button(action: { viewModel.joinRoom() }) {
                     Text("Join")
                         .font(.headline)
                         .foregroundStyle(Color.appTheme.accentContrastText)
@@ -200,7 +200,7 @@ private extension OnlineLobbyView {
                     if finalCode.count == 4 {
                         viewModel.roomCode = finalCode
                         viewModel.showScanner = false
-                        viewModel.joinRoom()
+                        viewModel.joinRoom(method: "qr")
                     }
                 }
                 .cornerRadius(20)
