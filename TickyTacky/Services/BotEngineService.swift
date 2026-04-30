@@ -8,24 +8,24 @@
 import Foundation
 
 protocol BotEngineServiceProtocol {
-    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) -> CellCoordinate
+    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) async -> CellCoordinate
 }
 
 struct BotEngineService: BotEngineServiceProtocol {
-    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) -> CellCoordinate {
+    func bestMove(in board: Board, difficulty: Difficulty, botSymbol: CellState) async -> CellCoordinate {
         switch difficulty {
         case .easy:
             return randomMove(from: board)
         case .medium:
             return mediumMove(from: board, botSymbol: botSymbol)
         case .hard:
-            return hardMove(from: board, botSymbol: botSymbol)
+            return await hardMove(from: board, botSymbol: botSymbol)
         }
     }
 }
 
 private extension BotEngineService {
-    func hardMove(from board: Board, botSymbol: CellState) -> CellCoordinate {
+    func hardMove(from board: Board, botSymbol: CellState) async -> CellCoordinate {
         var bestScore = Int.min
         var move = CellCoordinate(row: 0, col: 0)
         let opponentSymbol: CellState = botSymbol == .x ? .o : .x

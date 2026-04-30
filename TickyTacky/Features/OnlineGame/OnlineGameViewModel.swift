@@ -47,7 +47,7 @@ final class OnlineGameViewModel: ObservableObject {
     
     let roomID: String
     private var isMatchSaved: Bool = false
-    private var turnTimer: Timer?
+    private var turnTimerTask: Task<Void, Never>?
     private var matchStartTime: Date?
     
     private var p1EmojiLastTime: TimeInterval = 0
@@ -68,9 +68,9 @@ final class OnlineGameViewModel: ObservableObject {
     }
     
     func observeRoom() {
-        onlineGameService.observeRoom(roomID: roomID) { [weak self] room in
-            Task { @MainActor in
-                self?.updateRoom(room)
+        Task {
+            for await room in onlineGameService.observeRoomStream(roomID: roomID) {
+                self.updateRoom(room)
             }
         }
     }
@@ -137,7 +137,9 @@ final class OnlineGameViewModel: ObservableObject {
         
         // When room becomes finished, handle the final match result once
         if room.status == "finished" && !isMatchSaved {
-            handleFinalMatchEnd(winnerID: room.winnerID ?? "tie")
+            Task {
+                await handleFinalMatchEnd(winnerID: room.winnerID ?? "tie")
+            }
         }
         
         checkWin()
@@ -171,14 +173,15 @@ final class OnlineGameViewModel: ObservableObject {
             // or if I'm the one who made the move that ended the round
             if playerID == room.player1ID {
                 // Short delay to let player see the winning move
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
                     self.onlineGameService.reportRoundWin(roomID: self.roomID, winnerID: winner)
                 }
             }
         }
     }
     
-    private func handleFinalMatchEnd(winnerID: String) {
+    private func handleFinalMatchEnd(winnerID: String) async {
         isMatchSaved = true
         
         if winnerID == playerID {
@@ -207,12 +210,12 @@ final class OnlineGameViewModel: ObservableObject {
         analyticsService.trackGameEnd(result: winnerID == playerID ? "humanWin" : (winnerID == "tie" ? "tie" : "opponentWin"))
         
         let duration = matchStartTime.map { Date().timeIntervalSince($0) } ?? 0
-        saveToHistory(winnerID: winnerID, duration: duration)
-        checkOnlineAchievements(winnerID: winnerID, duration: duration)
+        await saveToHistory(winnerID: winnerID, duration: duration)
+        await checkOnlineAchievements(winnerID: winnerID, duration: duration)
         matchStartTime = nil
     }
     
-    private func saveToHistory(winnerID: String, duration: TimeInterval) {
+    private func saveToHistory(winnerID: String, duration: TimeInterval) async {
         guard let room = room else { return }
         
         let resultType: String = (winnerID == playerID) ? "Win" : (winnerID == "tie" ? "Tie" : "Loss")
@@ -224,12 +227,13 @@ final class OnlineGameViewModel: ObservableObject {
             player1Name: myName, player2Name: opponentName, winnerName: winnerName,
             date: Date(), duration: duration, difficulty: "Online", resultType: resultType
         )
-        historyService.saveMatch(history)
+        await historyService.saveMatch(history)
     }
     
-    private func checkOnlineAchievements(winnerID: String, duration: TimeInterval) {
+    private func checkOnlineAchievements(winnerID: String, duration: TimeInterval) async {
         let result: GameResult = winnerID == playerID ? .humanWin : (winnerID == "tie" ? .tie : .botWin)
-        let totalTies = historyService.fetchAllMatches().filter { $0.resultType == "Tie" && $0.difficulty == "Online" }.count
+        let matches = await historyService.fetchAllMatches()
+        let totalTies = matches.filter { $0.resultType == "Tie" && $0.difficulty == "Online" }.count
         let moveCount = room?.board.filter { !$0.isEmpty }.count ?? 0
         
         let unlocked = achievementService.checkAchievements(
@@ -258,30 +262,31 @@ final class OnlineGameViewModel: ObservableObject {
             stopTurnTimer()
             return
         }
-        if turnTimer != nil { return }
+        if turnTimerTask != nil { return }
         turnCountdown = autoMoveTotalSeconds
-        turnTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                if self.turnCountdown > 1 {
-                    self.turnCountdown -= 1
-                } else {
-                    self.stopTurnTimer()
-                    self.autoMove()
+        
+        turnTimerTask = Task {
+            while turnCountdown > 0 && !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if Task.isCancelled { break }
+                
+                turnCountdown -= 1
+                if turnCountdown == 0 {
+                    await autoMove()
                 }
             }
         }
     }
     
     private func stopTurnTimer() {
-        turnTimer?.invalidate()
-        turnTimer = nil
+        turnTimerTask?.cancel()
+        turnTimerTask = nil
         turnCountdown = autoMoveTotalSeconds
     }
     
-    private func autoMove() {
+    private func autoMove() async {
         guard isMyTurn, let room = room, room.status == "playing" else { return }
-        let move = botEngine.bestMove(in: board, difficulty: .medium, botSymbol: mySymbol)
+        let move = await botEngine.bestMove(in: board, difficulty: .medium, botSymbol: mySymbol)
         let index = move.row * 3 + move.col
         onlineGameService.sendMove(roomID: roomID, boardIndex: index, playerID: playerID)
         hapticService.triggerImpact(style: .medium)

@@ -1,46 +1,51 @@
-# TickyTacky - The Ultimate Tic Tac Toe Challenge
+# TickyTacky - Đỉnh Cao Cờ Caro (Tic Tac Toe) Hiện Đại
 
-TickyTacky is a premium, modern Tic Tac Toe game built for iOS with a focus on high-end aesthetics and a challenging AI engine. 
+TickyTacky không chỉ là một trò chơi Tic Tac Toe thông thường; đây là một ứng dụng iOS cao cấp được xây dựng với sự tinh tế trong thiết kế, trí tuệ nhân tạo (AI) mạnh mẽ và khả năng chơi trực tuyến thời gian thực.
 
-## ✨ Features
+## ✨ Các Tính Năng Nổi Bật
 
-- **🏆 Unbeatable AI**: Powered by the **Minimax algorithm**, the "Hard" difficulty will challenge even the best players.
-- **🌗 Light & Dark Mode**: A beautiful **"Midnight Aurora"** theme that automatically adapts to your system settings.
-- **💎 Premium UI/UX**: Designed with glassmorphism, smooth animations, and a curated color palette for a professional feel.
-- **🛠 Modular Architecture**: Built using a robust MVVM pattern with **Factory** for dependency injection.
-- **⚡️ Real-time Feedback**: Smooth transitions and celebratory game result screens.
+Dựa trên việc phân tích mã nguồn, dưới đây là những tính năng cốt lõi làm nên sự khác biệt của TickyTacky:
 
-## 📱 Screenshots
+### 🎮 Chế Độ Chơi Đa Dạng
+- **Đấu với Máy (AI)**: Sử dụng thuật toán **Minimax** cho độ khó "Khó" (Hard), đảm bảo một thử thách không thể đánh bại nếu bạn không tính toán kỹ.
+- **Chơi Local**: Hai người chơi trên cùng một thiết bị với giao diện tối ưu.
+- **Đấu Online (Firebase)**: Kết nối và thi đấu với người chơi khác trên toàn thế giới thông qua Firebase Realtime Database.
 
-<p align="center">
+### 🌐 Tính Năng Online Cao Cấp
+- **Phòng Chơi Công Khai & Riêng Tư**: Bạn có thể tạo phòng để người lạ tham gia hoặc chia sẻ mã phòng cho bạn bè.
+- **Quét Mã QR**: Gia nhập phòng chơi nhanh chóng bằng cách quét mã QR (tích hợp `QRScannerView` và `QRCodeService`).
+- **Best of 3 (Bo3)**: Chế độ thi đấu phân định thắng thua qua 3 hiệp đấu kịch tính.
+- **Cảm Xúc (Emoji Reactions)**: Gửi các biểu tượng cảm xúc thời gian thực để tương tác với đối thủ trong trận đấu.
 
-  <img src="https://github.com/user-attachments/assets/efd9a589-b509-4e75-8116-f131155f5d68" width="200" alt="Setup Dark Mode">
+### 🏆 Hệ Thống Thành Tựu & Xếp Hạng
+- **Thành Tựu (Achievements)**: Theo dõi và mở khóa các cột mốc như "Bot Slayer", "Speedster" (thắng dưới 10 giây), hay "Unstoppable" (chuỗi thắng).
+- **Bảng Xếp Hạng (Leaderboard)**: Cạnh tranh vị trí dẫn đầu với cộng đồng người chơi.
+- **Lịch Sử Trận Đấu**: Lưu trữ và xem lại các kết quả đối đầu trước đó.
 
+### 💎 Trải Nghiệm Người Dùng (UX/UI)
+- **Haptic Feedback**: Sử dụng `HapticService` để mang lại cảm giác rung phản hồi chân thực khi chạm vào các ô cờ hoặc khi có kết quả trận đấu.
+- **Giao Diện Hiện Đại**: Hỗ trợ đầy đủ **Dark/Light Mode** với bảng màu "Midnight Aurora" được tinh chỉnh tỉ mỉ.
+- **Hiệu Ứng Sinh Động**: Hiệu ứng pháo hoa (Confetti) khi chiến thắng và các chuyển cảnh mượt mà.
 
+## 🚀 Công Nghệ Sử Dụng
 
-  <img src="https://github.com/user-attachments/assets/6af92d55-b051-4ae7-b9ca-9b3b6a65d9dd" width="200" alt="Setup Light Mode">
- 
+Dự án được xây dựng trên nền tảng công nghệ mới nhất của hệ sinh thái Apple:
 
-  <img src="https://github.com/user-attachments/assets/49248deb-b18c-4045-b2bb-33a6ab567d7d" width="200" alt="Gameplay">
+- **Ngôn ngữ**: Swift 5.10+
+- **Giao diện**: SwiftUI (Khai báo giao diện hiện đại)
+- **Kiến trúc**: MVVM kết hợp với **Factory** (Dependency Injection) để quản lý mã nguồn sạch và dễ kiểm thử.
+- **Xử lý bất đồng bộ**: Sử dụng **Swift Concurrency** (`async/await`, `AsyncStream`) cho việc xử lý logic AI và dữ liệu Firebase một cách mượt mà, không gây treo giao diện.
+- **Backend**: Firebase Realtime Database cho tính năng multiplayer thời gian thực.
+- **Dependency Management**: Tích hợp các service thông qua mô hình Container-based DI.
 
+## ⚙️ Cấu Hình & Cài Đặt
 
-  <img src="https://github.com/user-attachments/assets/0d3232f2-35ff-47c2-b620-2567369ae710"  width="200" alt="Game Result">
-</p>
-
-## 🚀 Technical Stack
-
-- **UI**: SwiftUI
-- **Logic**: Swift (Minimax Algorithm)
-- **DI**: Factory (Container-based Dependency Injection)
-- **Data Flow**: Combine & ObservableObjects
-- **Styling**: Curated Hex-based Dynamic Colors
-
-## ⚙️ Game Rules & Settings
-
-- **Difficulty**: Choose between Easy (Random), Medium (Strategic), and Hard (Minimax).
-- **Turn Order**: Decide who starts first: You, the Opponent (AI), or let the game choose Randomly.
-- **Score Tracking**: Keep track of wins across multiple games.
+1. **Yêu cầu**: Xcode 15.0+, iOS 17.0+
+2. **Firebase**: 
+   - Đảm bảo tệp `GoogleService-Info.plist` đã được cấu hình trong dự án.
+   - Database URL phải được trỏ chính xác trong `TickyTackyApp.swift`.
+3. **Chạy dự án**: Mở tệp `TickyTacky.xcodeproj` và nhấn `Cmd + R`.
 
 ---
 
-Designed with ❤️ for a professional gaming experience.
+Được thiết kế và phát triển với ❤️ nhằm mang lại trải nghiệm chơi game chuyên nghiệp và đẳng cấp.

@@ -9,27 +9,25 @@ import Foundation
 import SwiftData
 
 protocol HistoryServiceProtocol {
-    @MainActor func saveMatch(_ match: MatchHistory)
-    @MainActor func fetchAllMatches() -> [MatchHistory]
-    @MainActor func clearHistory()
+    func saveMatch(_ match: MatchHistory) async
+    func fetchAllMatches() async -> [MatchHistory]
+    func clearHistory() async
 }
 
 final class HistoryService: HistoryServiceProtocol {
     private let container: ModelContainer
-    private let context: ModelContext
 
-    @MainActor
     init() {
         do {
             container = try ModelContainer(for: MatchHistory.self)
-            context = container.mainContext
         } catch {
             fatalError("Failed to initialize SwiftData ModelContainer: \(error)")
         }
     }
 
     @MainActor
-    func saveMatch(_ match: MatchHistory) {
+    func saveMatch(_ match: MatchHistory) async {
+        let context = container.mainContext
         context.insert(match)
         do {
             try context.save()
@@ -39,7 +37,8 @@ final class HistoryService: HistoryServiceProtocol {
     }
 
     @MainActor
-    func fetchAllMatches() -> [MatchHistory] {
+    func fetchAllMatches() async -> [MatchHistory] {
+        let context = container.mainContext
         let descriptor = FetchDescriptor<MatchHistory>(sortBy: [SortDescriptor(\.date, order: .reverse)])
         do {
             return try context.fetch(descriptor)
@@ -50,9 +49,11 @@ final class HistoryService: HistoryServiceProtocol {
     }
     
     @MainActor
-    func clearHistory() {
+    func clearHistory() async {
+        let context = container.mainContext
         do {
             try context.delete(model: MatchHistory.self)
+            try context.save()
         } catch {
             print("Failed to clear history: \(error)")
         }

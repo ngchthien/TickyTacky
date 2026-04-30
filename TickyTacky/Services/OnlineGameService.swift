@@ -8,13 +8,31 @@
 import Foundation
 import FirebaseDatabase
 
+enum OnlineGameError: LocalizedError {
+    case roomNotFound
+    case roomFull
+    case internalError(String)
+    case unauthorized
+    
+    var errorDescription: String? {
+        switch self {
+        case .roomNotFound: return "Không tìm thấy phòng chơi."
+        case .roomFull: return "Phòng đã đầy."
+        case .internalError(let msg): return "Lỗi hệ thống: \(msg)"
+        case .unauthorized: return "Bạn không có quyền thực hiện hành động này."
+        }
+    }
+}
+
 protocol OnlineGameServiceProtocol {
     func createRoom(playerName: String, isPublic: Bool) async throws -> (roomID: String, playerID: String)
     func joinRoom(roomID: String, playerName: String) async throws -> String
     func observePublicRooms(onUpdate: @escaping ([GameRoom]) -> Void)
+    func observePublicRoomsStream() -> AsyncStream<[GameRoom]>
     func toggleReady(roomID: String, playerID: String, isReady: Bool)
     func sendMove(roomID: String, boardIndex: Int, playerID: String)
     func observeRoom(roomID: String, onUpdate: @escaping (GameRoom) -> Void)
+    func observeRoomStream(roomID: String) -> AsyncStream<GameRoom>
     func leaveRoom(roomID: String, playerID: String)
     func restartRoom(roomID: String)
     func setWinner(roomID: String, winnerID: String)
@@ -162,7 +180,7 @@ final class OnlineGameService: OnlineGameServiceProtocol {
         let snapshot = try await roomRef.getData()
         
         guard snapshot.exists() else {
-            throw NSError(domain: "OnlineGame", code: 404, userInfo: [NSLocalizedDescriptionKey: "Room not found"])
+            throw OnlineGameError.roomNotFound
         }
         
         let playerID = UUID().uuidString
@@ -192,7 +210,7 @@ final class OnlineGameService: OnlineGameServiceProtocol {
                 if let error = error {
                     continuation.resume(returning: .failure(error))
                 } else if !committed {
-                    continuation.resume(returning: .failure(NSError(domain: "Game", code: 400, userInfo: [NSLocalizedDescriptionKey: "Room is full or not found"])))
+                    continuation.resume(returning: .failure(OnlineGameError.roomFull))
                 } else {
                     continuation.resume(returning: .success(()))
                 }
@@ -235,6 +253,33 @@ final class OnlineGameService: OnlineGameServiceProtocol {
             
             onUpdate(publicRooms)
         })
+    }
+    
+    func observePublicRoomsStream() -> AsyncStream<[GameRoom]> {
+        AsyncStream { continuation in
+            let handle = db.child("rooms").observe(.value) { snapshot in
+                guard let roomsDict = snapshot.value as? [String: [String: Any]] else {
+                    continuation.yield([])
+                    return
+                }
+                
+                let publicRooms = roomsDict.compactMap { (id, dict) -> GameRoom? in
+                    let isPublic = dict["isPublic"] as? Bool ?? false
+                    let status = dict["status"] as? String ?? ""
+                    let p2ID = dict["player2ID"] as? String
+                    
+                    if isPublic && status == "waiting" && p2ID == nil {
+                        return GameRoom.from(id: id, dict: dict)
+                    }
+                    return nil
+                }
+                continuation.yield(publicRooms)
+            }
+            
+            continuation.onTermination = { [weak self] _ in
+                self?.db.child("rooms").removeObserver(withHandle: handle)
+            }
+        }
     }
     
     func toggleReady(roomID: String, playerID: String, isReady: Bool) {
@@ -300,6 +345,21 @@ final class OnlineGameService: OnlineGameServiceProtocol {
         roomHandle = roomRef.observe(.value) { snapshot, _ in
             if let dict = snapshot.value as? [String: Any], let room = GameRoom(id: snapshot.key, dict: dict) {
                 onUpdate(room)
+            }
+        }
+    }
+    
+    func observeRoomStream(roomID: String) -> AsyncStream<GameRoom> {
+        AsyncStream { continuation in
+            let roomRef = db.child("rooms").child(roomID)
+            let handle = roomRef.observe(.value) { snapshot, _ in
+                if let dict = snapshot.value as? [String: Any], let room = GameRoom(id: snapshot.key, dict: dict) {
+                    continuation.yield(room)
+                }
+            }
+            
+            continuation.onTermination = { _ in
+                roomRef.removeObserver(withHandle: handle)
             }
         }
     }
