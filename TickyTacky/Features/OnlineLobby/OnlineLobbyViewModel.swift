@@ -17,6 +17,7 @@ class OnlineLobbyViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var showScanner: Bool = false
     @Published var navigationPath: [OnlineLobbyDestination] = []
+    @Published var publicRooms: [GameRoom] = []
     
     enum OnlineLobbyDestination: Hashable {
         case privateJoin
@@ -32,6 +33,15 @@ class OnlineLobbyViewModel: ObservableObject {
     
     init() {
         self.playerName = UserDefaults.standard.string(forKey: UserDefaultKeys.playerName) ?? "Player"
+        observePublicRooms()
+    }
+    
+    private func observePublicRooms() {
+        Task {
+            for await rooms in onlineGameService.observePublicRoomsStream() {
+                self.publicRooms = rooms
+            }
+        }
     }
     
     func goBack() {
@@ -69,8 +79,13 @@ class OnlineLobbyViewModel: ObservableObject {
                 analyticsService.trackRoomAction(action: "create", method: isPublic ? "public" : "private")
                 isLoading = false
                 appModeStore.goOnlineGame(roomID: result.roomID)
+            } catch let error as OnlineGameError {
+                errorMessage = error.errorDescription
+                toastManager.show(message: error.errorDescription ?? "Lỗi không xác định", type: .error)
+                isLoading = false
             } catch {
                 errorMessage = error.localizedDescription
+                toastManager.show(message: error.localizedDescription, type: .error)
                 isLoading = false
             }
         }
@@ -103,8 +118,13 @@ class OnlineLobbyViewModel: ObservableObject {
                 
                 self.isLoading = false
                 self.appModeStore.goOnlineGame(roomID: self.roomCode)
+            } catch let error as OnlineGameError {
+                errorMessage = error.errorDescription
+                toastManager.show(message: error.errorDescription ?? "Lỗi không xác định", type: .error)
+                isLoading = false
             } catch {
                 errorMessage = error.localizedDescription
+                toastManager.show(message: error.localizedDescription, type: .error)
                 isLoading = false
             }
         }

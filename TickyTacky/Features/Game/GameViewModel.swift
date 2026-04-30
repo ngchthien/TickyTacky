@@ -97,16 +97,17 @@ final class GameViewModel: ObservableObject {
     
     func getHint() {
         guard !isPlayHumanMoveDisabled else { return }
-        let bestMove = gameStore.botBestMove(in: board, difficulty: .hard, botSymbol: currentPlayer.cellSymbol)
         
-        withAnimation(.spring()) {
-            suggestedMove = bestMove
-        }
-        
-        hapticService.triggerImpact(style: .medium)
-        
-        // Auto-hide hint after 2 seconds
         Task {
+            let bestMove = await gameStore.botBestMove(in: board, difficulty: .hard, botSymbol: currentPlayer.cellSymbol)
+            
+            withAnimation(.spring()) {
+                suggestedMove = bestMove
+            }
+            
+            hapticService.triggerImpact(style: .medium)
+            
+            // Auto-hide hint after 2 seconds
             try? await Task.sleep(for: .seconds(2))
             if suggestedMove == bestMove {
                 withAnimation {
@@ -148,7 +149,7 @@ private extension GameViewModel {
             
             try? await Task.sleep(for: .seconds(GameConstants.botMoveDelay))
             
-            let bestMove = gameStore.botBestMove(in: board, difficulty: difficulty, botSymbol: currentPlayer.cellSymbol)
+            let bestMove = await gameStore.botBestMove(in: board, difficulty: difficulty, botSymbol: currentPlayer.cellSymbol)
             playMove(row: bestMove.row, col: bestMove.col)
         }
     }
@@ -168,7 +169,7 @@ private extension GameViewModel {
             if let winningCellCordinatesPath = gameStore.checkWin(in: board, for: currentPlayer.cellSymbol) {
                 Task {
                     await animateWinningCellsPath(winningCellCordinatesPath)
-                    handleGameEnd(winner: currentPlayer)
+                    await handleGameEnd(winner: currentPlayer)
                 }
             } else if gameStore.isBoardFull(board) {
                 triggerTie()
@@ -192,7 +193,7 @@ private extension GameViewModel {
         }
     }
     
-    func handleGameEnd(winner: Player?) {
+    func handleGameEnd(winner: Player?) async {
         if let winner {
             if winner == player1 {
                 player1.wins += 1
@@ -217,10 +218,10 @@ private extension GameViewModel {
             analyticsService.trackGameEnd(result: GameResult.tie.rawValue)
         }
         
-        saveGameToHistory(winner: winner)
+        await saveGameToHistory(winner: winner)
     }
     
-    func saveGameToHistory(winner: Player?) {
+    func saveGameToHistory(winner: Player?) async {
         guard let startDate = gameStartDate else { return }
         let duration = Date().timeIntervalSince(startDate)
         
@@ -240,19 +241,20 @@ private extension GameViewModel {
             resultType: resultType
         )
         
-        historyService.saveMatch(history)
+        await historyService.saveMatch(history)
         
-        checkAchievements(result: resultType == "Win" ? .humanWin : (resultType == "Loss" ? .botWin : .tie), duration: duration)
+        await checkAchievements(result: resultType == "Win" ? .humanWin : (resultType == "Loss" ? .botWin : .tie), duration: duration)
     }
     
-    func checkAchievements(result: GameResult, duration: TimeInterval) {
+    func checkAchievements(result: GameResult, duration: TimeInterval) async {
         if result == .humanWin {
             winStreak += 1
         } else if result == .botWin {
             winStreak = 0
         }
         
-        let totalTies = historyService.fetchAllMatches().filter { $0.resultType == "Tie" }.count
+        let matches = await historyService.fetchAllMatches()
+        let totalTies = matches.filter { $0.resultType == "Tie" }.count
         
         let unlocked = achievementService.checkAchievements(
             result: result,
@@ -280,7 +282,7 @@ private extension GameViewModel {
     func triggerTie() {
         Task {
             try? await Task.sleep(for: .seconds(GameConstants.gameOverDelay))
-            handleGameEnd(winner: nil)
+            await handleGameEnd(winner: nil)
         }
     }
     
