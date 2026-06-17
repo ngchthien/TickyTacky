@@ -2,8 +2,6 @@
 //  HistoryView.swift
 //  TickyTacky
 //
-//  Created by Antigravity on 4/27/26.
-//
 
 import SwiftUI
 
@@ -28,7 +26,9 @@ struct HistoryView: View {
     }
 }
 
+// MARK: - Private Views
 private extension HistoryView {
+    
     var backgroundGradient: some View {
         ZStack {
             Color.appTheme.viewBackground.ignoresSafeArea()
@@ -67,7 +67,11 @@ private extension HistoryView {
             
             Spacer()
             
-            Button(action: viewModel.clearHistory) {
+            Button {
+                Task {
+                    await viewModel.clearHistory()
+                }
+            } label: {
                 Image(systemName: "trash")
                     .font(.title3)
                     .foregroundStyle(Color.appTheme.destructive)
@@ -76,8 +80,8 @@ private extension HistoryView {
                     .clipShape(Circle())
                     .shadow(.light)
             }
-            .button(.press) {}
-            .opacity(viewModel.matches.isEmpty ? 0 : 1)
+            .disabled(viewModel.matches.isEmpty)
+            .opacity(viewModel.matches.isEmpty ? 0.3 : 1)
         }
         .padding()
     }
@@ -85,6 +89,7 @@ private extension HistoryView {
     var emptyStateView: some View {
         VStack(spacing: 20) {
             Spacer()
+            
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 60))
                 .foregroundStyle(Color.appTheme.secondaryText.opacity(0.3))
@@ -105,7 +110,10 @@ private extension HistoryView {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(viewModel.matches) { match in
-                    HistoryRow(match: match, formattedDuration: viewModel.formatDuration(match.duration))
+                    HistoryRow(
+                        match: match,
+                        formattedDuration: viewModel.formatDuration(match.duration)
+                    )
                 }
             }
             .padding()
@@ -113,12 +121,14 @@ private extension HistoryView {
     }
 }
 
+// MARK: - Row
 struct HistoryRow: View {
     let match: MatchHistory
     let formattedDuration: String
     
     var body: some View {
         VStack(spacing: 12) {
+            
             HStack {
                 Text(match.date, style: .date)
                     .font(.caption2)
@@ -137,7 +147,10 @@ struct HistoryRow: View {
             }
             
             HStack(spacing: 20) {
-                playerView(name: match.player1Name, isWinner: match.winnerName == match.player1Name)
+                playerView(
+                    name: match.player1Name,
+                    isWinner: match.winnerName == match.player1Name
+                )
                 
                 VStack(spacing: 4) {
                     Text("VS")
@@ -149,7 +162,10 @@ struct HistoryRow: View {
                         .foregroundStyle(Color.appTheme.secondaryText)
                 }
                 
-                playerView(name: match.player2Name, isWinner: match.winnerName == match.player2Name)
+                playerView(
+                    name: match.player2Name,
+                    isWinner: match.winnerName == match.player2Name
+                )
             }
             
             resultTag
@@ -168,7 +184,9 @@ struct HistoryRow: View {
         VStack(spacing: 4) {
             Text(name)
                 .font(.subheadline.bold())
-                .foregroundStyle(isWinner ? Color.appTheme.accent : Color.appTheme.text)
+                .foregroundStyle(
+                    isWinner ? Color.appTheme.accent : Color.appTheme.text
+                )
                 .lineLimit(1)
             
             if isWinner {
@@ -192,13 +210,17 @@ struct HistoryRow: View {
     
     var resultColor: Color {
         switch match.resultType {
-        case "Win": return Color.appTheme.success
-        case "Loss": return Color.appTheme.destructive
-        default: return Color.appTheme.secondaryText
+        case "Win":
+            return Color.appTheme.success
+        case "Loss":
+            return Color.appTheme.destructive
+        default:
+            return Color.appTheme.secondaryText
         }
     }
 }
 
+// MARK: - Preview
 #Preview {
     HistoryView()
 }

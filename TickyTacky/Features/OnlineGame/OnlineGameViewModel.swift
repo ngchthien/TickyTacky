@@ -54,10 +54,18 @@ final class OnlineGameViewModel: ObservableObject {
     private var p2EmojiLastTime: TimeInterval = 0
     private var p1EmojiTask: Task<Void, Never>? = nil
     private var p2EmojiTask: Task<Void, Never>? = nil
+    private var observeTask: Task<Void, Never>?
     
     init(roomID: String) {
         self.roomID = roomID
         observeRoom()
+    }
+    
+    deinit {
+        observeTask?.cancel()
+        turnTimerTask?.cancel()
+        p1EmojiTask?.cancel()
+        p2EmojiTask?.cancel()
     }
     
     func toggleReady() {
@@ -68,7 +76,8 @@ final class OnlineGameViewModel: ObservableObject {
     }
     
     func observeRoom() {
-        Task {
+        observeTask?.cancel()
+        observeTask = Task {
             for await room in onlineGameService.observeRoomStream(roomID: roomID) {
                 self.updateRoom(room)
             }
@@ -331,7 +340,7 @@ final class OnlineGameViewModel: ObservableObject {
     
     func quitGame() {
         onlineGameService.leaveRoom(roomID: roomID, playerID: playerID)
-        appModeStore.goOnlineLobby()
+        appModeStore.goBack()
     }
     
     func copyToClipboard(_ text: String) {

@@ -9,53 +9,59 @@ import Foundation
 import Combine
 
 @MainActor
-final class AppModeLiveStore: ObservableObject{
+final class AppModeLiveStore: ObservableObject {
   
-  @Published var appMode: AppMode = .home
-  private var previousMode: AppMode = .home
+  @Published private(set) var appMode: AppMode = .home
+  private var modeStack: [AppMode] = [.home]
   
   private func updateMode(_ newMode: AppMode) {
     if appMode != newMode {
-        previousMode = appMode
+        modeStack.append(newMode)
         appMode = newMode
     }
   }
 
-  func goHome()
-  {
-    updateMode(.home)
+  func goHome() {
+    modeStack = [.home]
+    appMode = .home
   }
-  func goGameMode()
-  {
+  
+  func goGameMode() {
     updateMode(.game)
   }
-  func goSetupMode()
-  {
+  
+  func goSetupMode() {
     updateMode(.gameSetup)
   }
-  func goHistoryMode()
-  {
+  
+  func goHistoryMode() {
     updateMode(.history)
   }
-  func goSettingsMode()
-  {
+  
+  func goSettingsMode() {
     updateMode(.settings)
   }
-  func goOnlineLobby()
-  {
+  
+  func goOnlineLobby() {
     updateMode(.onlineLobby)
   }
-  func goOnlineGame(roomID: String)
-  {
+  
+  func goOnlineGame(roomID: String) {
     updateMode(.onlineGame(roomID))
   }
   
-  func goLeaderboard()
-  {
+  func goLeaderboard() {
     updateMode(.leaderboard)
   }
   
   func goBack() {
-    appMode = previousMode
+    if modeStack.count > 1 {
+        modeStack.removeLast()
+        if let previous = modeStack.last {
+            appMode = previous
+        }
+    } else if appMode != .home {
+        goHome()
+    }
   }
 }

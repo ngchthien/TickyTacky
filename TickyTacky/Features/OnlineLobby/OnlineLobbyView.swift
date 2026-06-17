@@ -70,13 +70,7 @@ private extension OnlineLobbyView {
     
     var headerView: some View {
         HStack {
-            Button(action: { 
-                if !viewModel.navigationPath.isEmpty {
-                    viewModel.goBack()
-                } else {
-                    viewModel.goBack()
-                }
-            }) {
+            Button(action: { viewModel.goBack() }) {
                 Image(systemName: "chevron.left")
                     .font(.title3.bold())
                     .foregroundStyle(Color.appTheme.text)

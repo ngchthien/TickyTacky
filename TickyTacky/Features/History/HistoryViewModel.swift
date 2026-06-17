@@ -17,15 +17,15 @@ final class HistoryViewModel: ObservableObject {
     @Injected(\.appModeStore) private var appModeStore
     
     init() {
-        loadHistory()
+        Task { await loadHistory() }
     }
     
-    func loadHistory() {
-        matches = historyService.fetchAllMatches()
+    func loadHistory() async{
+        matches = await historyService.fetchAllMatches()
     }
     
-    func clearHistory() {
-        historyService.clearHistory()
+    func clearHistory() async{
+      await historyService.clearHistory()
         matches = []
     }
     

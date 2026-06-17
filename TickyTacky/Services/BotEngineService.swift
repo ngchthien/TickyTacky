@@ -120,16 +120,7 @@ private extension BotEngineService {
     }
     
     func checkWinner(in board: Board) -> CellState? {
-        let lines = [
-            [(0,0), (0,1), (0,2)],
-            [(1,0), (1,1), (1,2)],
-            [(2,0), (2,1), (2,2)],
-            [(0,0), (1,0), (2,0)],
-            [(0,1), (1,1), (2,1)],
-            [(0,2), (1,2), (2,2)],
-            [(0,0), (1,1), (2,2)],
-            [(0,2), (1,1), (2,0)]
-        ]
+        let lines = GameConstants.winningLines
         
         for line in lines {
             let (a,b,c) = (line[0], line[1], line[2])

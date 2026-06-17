@@ -139,7 +139,7 @@ final class OnlineGameService: OnlineGameServiceProtocol {
             } else {
                 print("Firebase: Disconnected from server")
                 DispatchQueue.main.async {
-                    self.toastManager.show(message: "Mất kết nối mạng. Đang thử lại...", type: .warning)
+                    self.toastManager.show(message: AppStrings.reconnecting, type: .warning)
                 }
             }
         }

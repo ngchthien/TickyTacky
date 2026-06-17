@@ -23,16 +23,7 @@ final class BoardLogicLiveService: BoardLogicServiceProtocol {
     }
     
     func checkWin(in board: Board, for cellSymbol: CellState) -> [CellCoordinate]? {
-        let lines = [
-            [(0,0), (0,1), (0,2)],
-            [(1,0), (1,1), (1,2)],
-            [(2,0), (2,1), (2,2)],
-            [(0,0), (1,0), (2,0)],
-            [(0,1), (1,1), (2,1)],
-            [(0,2), (1,2), (2,2)],
-            [(0,0), (1,1), (2,2)],
-            [(0,2), (1,1), (2,0)]
-        ]
+        let lines = GameConstants.winningLines
         
         for line in lines {
             let cells = line.map { board[$0.0][$0.1] }

@@ -33,6 +33,8 @@ struct AppStrings {
     static let copied = "Copied!"
     static let roomFull = "Room is full"
     static let roomNotFound = "Room not found"
+    static let networkError = "Network error. Please check your connection."
+    static let reconnecting = "Network lost. Reconnecting..."
     
     // Game
     static let waitingForPlayer = "Waiting for Opponent..."

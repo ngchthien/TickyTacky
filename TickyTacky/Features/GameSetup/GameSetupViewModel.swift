@@ -33,7 +33,7 @@ final class GameSetupViewModel: ObservableObject {
     }
     
     func startGame() {
-        appModeStore.appMode = .game
+        appModeStore.goGameMode()
     }
     
     func goHistory() {

@@ -24,6 +24,7 @@ class OnlineLobbyViewModel: ObservableObject {
     }
     
     private var currentPlayerID: String?
+    private var observeTask: Task<Void, Never>?
     
     @Injected(\.appModeStore) private var appModeStore
     @Injected(\.onlineGameService) private var onlineGameService
@@ -36,8 +37,13 @@ class OnlineLobbyViewModel: ObservableObject {
         observePublicRooms()
     }
     
+    deinit {
+        observeTask?.cancel()
+    }
+    
     private func observePublicRooms() {
-        Task {
+        observeTask?.cancel()
+        observeTask = Task {
             for await rooms in onlineGameService.observePublicRoomsStream() {
                 self.publicRooms = rooms
             }
